@@ -65,7 +65,8 @@ To make this data tidy, we'll do some cleanup. First, remove the columns you don
 HINT: `?select` and the examples of helper functions will help you be efficient.
 
 ```{r select}
-d.tidy <- d.tidy %>% select(starts_with("Input."),starts_with("Answer."),starts_with("Worker"))
+d.tidy <- d.tidy %>% 
+  select(starts_with("Input."),starts_with("Answer."),starts_with("Worker"))
 ```
 
 
@@ -87,11 +88,13 @@ OK, now for the tricky part. Use the verb *gather* to turn this into a *tidy* da
 HINT: look for online examples!
 
 ```{r gather}
-d.tidy2 <- d.tidy1 %>% gather(est,estVal,5:7)
-d.tidy3 <- d.tidy2 %>% gather(answer,ansVal,2:4)
-d.long = d.tidy3
+d.long <- d.tidy1 %>%
+  gather(est,estVal,5:7) %>%
+  gather(answer,ansVal,2:4) %>%
+  mutate(group=answer) %>%
+  filter(!is.nan(estVal)) # I thought this did what the next line does... for some reason it doesn' twork
+d.long <- d.long[complete.cases(d.long),]
 ```
-
 
 Bonus problem: *spread* these data back into a wide format data frame.
 
@@ -115,8 +118,9 @@ As we said in class, a good thing to do is always to check histograms of the res
 ```{r}
 d.long %>% ggplot +
   geom_histogram(aes(x=estVal)) +
-  facet_grid(.~est,scales='free_y')
-# For some reason this doesn't work...? It plots a plot that I wan't, but then it immediatley replcaes it with the scales='fixed' plot. If you know how to fix that it would be really helpful...
+  facet_grid(.~est,scale='free_x')
+
+# The sushi esitmates and dog estimates look more or less 'normal', while the plasma estimates are clearly hitting a ceiling and skewed. If our analysis requires normality we might want to take this into account.
 ```
 
 OK, now we turn to the actual data anlysis. We'll be using dplyr verbs to `filter`, `group`,`mutate`, and `summarise` the data.
@@ -124,7 +128,7 @@ OK, now we turn to the actual data anlysis. We'll be using dplyr verbs to `filte
 Start by using `summarise` on `d.tidy` to compute the mean bet across all participants. Note that this is simply taking the grand mean. Ultimately, we would like to compute the mean for different conditions and items, but this will come later. Right now we're just learning the syntax of `summarise`.
 
 ```{r}
-d.long %>% summarise(mean(estVal,nan.rm=T))
+d.long %>% group_by(est) %>% summarise(mean(estVal,nan.rm=T))
 ```
 
 This is a great time to get comfortable with the `%>%` operator. In brief, `%>%` allows you to pipe data from one function to another. So if you would have written:
@@ -161,7 +165,7 @@ In other words, you get to make a clean list of the things you want to do and ch
 Let's use that capacity to combine `summarise` with `group_by`, which allows us to break up our summary into groups. Try grouping by item and condition and taking means using `summarise`, chaining these two verbs with `%>%`.
 
 ```{r}
-#...
+d.long %>% group_by(cond,answer) %>% summarise(mean(estVal))
 ```
 
 OK, it's looking like there are maybe some differences between conditions, but how are we going to plot these? They are fundamentally different magnitudes from one another. 
@@ -171,11 +175,11 @@ Really we need the size of the deviation from the anchor, which means we need th
 Take a look at this complex expression. You don't have to modify it, but see what is being done here with gather, separate and spread. Run each part (e.g. the first verb, the first two verbs, etc.) and after doing each, look at `head(d.tidy)` to see what they do. 
 
 ```{r}
-d.tidy <- d %>%
+d.tidy <- d.unique.subs %>%
   select(WorkerId, Input.condition, 
          starts_with("Answer"), 
          starts_with("Input")) %>%
-  rename(workerid = WorkerId,
+  rename(.,workerid = WorkerId,
          condition = Input.condition,
          plasma_anchor = Input.price1,
          dog_anchor = Input.price2,
@@ -188,6 +192,8 @@ d.tidy <- d %>%
          dog_cost, plasma_cost, sushi_cost) %>%
   separate(name, c("item", "type"), sep = "_") %>%
   spread(type, cost)
+d.tidy$cost = as.numeric(gsub(",","",d.tidy$cost))
+d.tidy$anchor = as.numeric(gsub(",","",d.tidy$anchor))
 ```
 
 Now we can do the same thing as before but look at the relative difference between anchor and estimate. Let's do this two ways: 
@@ -198,9 +204,10 @@ Now we can do the same thing as before but look at the relative difference betwe
 To do the first, use the `mutate` verb to add a percent change column, then comute the same summary as before. 
 
 ```{r}
-#pcts <- d.tidy %>%
-#  mutate(pct_change = ... ) %>%
-#  ...
+pcts <- d.tidy %>%
+  mutate(pct_change = (cost-anchor) / anchor ) %>%
+  group_by(condition,item) %>%
+  summarise(pct = mean(pct_change))
 ```
 
 To do the second, you will need to `group` first by item, compute z-scores with respect to items, then further group by condition.
@@ -210,25 +217,27 @@ HINT: `scale(x)` returns a complicated data structure that doesn't play nicely w
 HINT: by default, `group_by` undoes any previous groupings. If you want to add new grouping variables *on top* of pre-existing ones, specify `add = TRUE`, e.g., `d %>% group_by(var1) %>% group_by(var2, add = TRUE)`.
 
 ```{r}
-#z.scores <- d.tidy %>% ...
+z.scores <- d.tidy %>%
+  group_by(item) %>%
+  mutate(z = (cost - anchor) / sd(anchor)) %>%
+  group_by(condition,add=T) %>%
+  summarise(z = mean(z))
 ```
 
 OK, now here comes the end: we're going to plot the differences and see if anything happened. First the percent change:
 
 ```{r}
-#qplot(item, pct, fill=condition,
-#      position="dodge",
-#      stat="identity", geom="bar",
-#      data=pcts)
+pcts %>%
+  ggplot(aes(item,pct,fill=condition)) +
+  geom_bar(stat='identity',position='dodge')
 ```
 
 and the z-scores:
 
 ```{r}
-#qplot(item, z, fill=condition,
-#      position="dodge",
-#      stat="identity", geom="bar",
-#      data=z.scores)
+z.scores %>%
+  ggplot(aes(item,z,fill=condition)) +
+  geom_bar(stat='identity',position='dodge')
 ```
 
 Oh well. This replication didn't seem to work out straightforwardly.

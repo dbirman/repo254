@@ -99,7 +99,7 @@ d.long <- d.long[complete.cases(d.long),]
 Bonus problem: *spread* these data back into a wide format data frame.
 
 ```{r spread}
-d.wide <- d.tidy3 %>% spread(est,estVal) %>% spread(answer,ansVal)
+d.wide <- d.long %>% spread(est,estVal) %>% spread(answer,ansVal)
 ```
 
 

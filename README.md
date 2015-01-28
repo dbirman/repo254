@@ -2,10 +2,9 @@
 repo254
 =======
 
-# Overview
+## Overview Doc
+https://docs.google.com/document/d/1y8yGgo7n05dew-5IWdyFWKKzEgEBwMMxiqWOL9GbvkQ/edit
 
-Nothing special here yet...
-=======
-# psych254_materials
-Materials for Psych 254
->>>>>>> ba76642e4373a27b2ab01b36224d406470a34af2
+## Replication Report
+
+https://docs.google.com/document/d/1KkrvfmJcH54p-TookInkTB586eUumbEnU3pp-lwrTi4/edit?usp=sharing

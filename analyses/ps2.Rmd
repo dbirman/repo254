@@ -35,16 +35,19 @@ qplot(diamonds$carat, diamonds$price)
 Scatter plots are trivial, and easy to add features to. Modify this plot so that it uses the dataframe rather than working from variables in the general namespace (good to get away from retyping `diamonds$` every time you reference a variable). 
 
 ```{r}
+# skipping, know how to do this
 ```
 
 Try adding clarity and cut, using shape and color as your visual variables. 
 
 ```{r}
+# skipping, know how to do this
 ```
 
 One of the primary benefits of `ggplot2` is the use of facets - also known as small multiples in the Tufte vocabulary. That last plot was probably hard to read. Facets could make it better. Try adding a `facets = x ~ y` argument. `x ~ y` means row facets are by x, column facets by y. 
 
 ```{r}
+# skipping, know how to do this
 ```
 
 But facets can also get overwhelming. Try to strike a good balance between color, shape, and faceting.
@@ -52,6 +55,7 @@ But facets can also get overwhelming. Try to strike a good balance between color
 HINT: `facets = . ~ x` puts x on the columns, but `facets = ~ x` (no dot) *wraps* the facets. These are underlying calls to different functions, `facet_wrap` (no dot) and `facet_grid` (two arguments). 
 
 ```{r}
+# skipping, know how to do this
 ```
 
 The basic unit of a ggplot plot is a "geom" - a mapping between data (via an "aesthetic") and a particular geometric configuration on coordinate axes. 
@@ -59,16 +63,19 @@ The basic unit of a ggplot plot is a "geom" - a mapping between data (via an "ae
 Let's try some other geoms and manipulate their parameters. First, try a histogram (`geom="hist"`). 
 
 ```{r}
+# skipping, know how to do this
 ```
 
 Now facet your histogram by clarity and cut. 
 
 ```{r}
+# skipping, know how to do this
 ```
 
 I like a slightly cleaner look to my plots. Luckily, ggplot allows you to add "themes" to your plots. Try doing the same plot but adding `+ theme_bw()` or `+ theme_classic()`. Different themes work better for different applications, in my experience. 
 
 ```{r}
+# skipping, know how to do this
 ```
 
 Part 1B: Exploring ggplot2 using ggplot
@@ -89,12 +96,14 @@ Try writing this as a single set of additions (e.g. one line of R code, though y
 
 
 ```{r}
+# skipping, know how to do this
 ```
 
 
 You can also set the aesthetic separately for each geom, and make some great plots this way. Though this can get complicated. Try using `ggplot` to build a histogram of prices. 
 
 ```{r}
+# skipping, know how to do this
 ```
 
 Part 2: Diving into real data: Sklar et al. (2012)
@@ -118,14 +127,22 @@ Data Prep
 First read in two data files and subject info. A and B refer to different trial order counterbalances. 
 
 ```{r}
-subinfo <- read.csv("../data/sklar_expt6_subinfo_corrected.csv")
-d.a <- read.csv("../data/sklar_expt6a_corrected.csv")
-d.b <- read.csv("../data/sklar_expt6b_corrected.csv")
+subinfo <- read.csv("C:\\Users\\Dan\\proj\\repo254\\data\\sklar_expt6_subinfo_corrected.csv")
+d.a <- read.csv("C:\\Users\\Dan\\proj\\repo254\\data\\sklar_expt6a_corrected.csv")
+d.b <- read.csv("C:\\Users\\Dan\\proj\\repo254\\data\\sklar_expt6b_corrected.csv")
 ```
 
 Gather these datasets into long form and get rid of the Xs in the headers.
 
 ```{r}
+sub2 = subinfo %>%
+  rename(sid=subid,ptime = presentation.time,s.test=subjective.test,o.test=objective.test)
+d.a2 = d.a %>%
+  gather(sid,RT,8:28)
+d.b2 = d.b %>%
+  gather(sid,RT,8:28)
+levels(d.a2$sid) = gsub("X","",levels(d.a2$sid))
+levels(d.b2$sid) = gsub("X","",levels(d.b2$sid))
 ```
 
 Bind these together. Check out `bind_rows`.

@@ -148,19 +148,23 @@ levels(d.b2$sid) = gsub("X","",levels(d.b2$sid))
 Bind these together. Check out `bind_rows`.
 
 ```{r}
+d = bind_rows(d.a2,d.b2) %>%
+  mutate(sid=factor(sid))
 ```
 
 Merge these with subject info. You will need to look into merge and its relatives, `left_join` and `right_join`. Call this dataframe `d`, by convention. 
 
 ```{r}
+d = merge(d,sub2) %>%
+  mutate(ptime = factor(ptime))
 ```
 
 Clean up the factor structure.
 
 ```{r}
-d$presentation.time <- factor(d$presentation.time)
 levels(d$operand) <- c("addition","subtraction")
 ```
 
 Data Analysis
 -------------
+

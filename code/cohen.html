@@ -1,0 +1,41 @@
+<html>
+<head>
+	<title>Cohen Replication Experiment</title>
+
+	<script src="jquery-1.11.2.js"></script>
+
+	<script src="mmturkey/mmturkey.js"></script>
+
+	<link rel="stylesheet" href="cohen.css" />
+</head>
+
+<body>
+
+	<div class="slide" id="instructions">
+		<img src="stim/grulab.png" alt="Gardner Lab @ Stanford University">
+		<p> </p>
+		<img src="stim/stanford.png" alt="Stanford University">
+		<p> </p>
+		<p class="block-text">In this experiment, you will see a rapid set of letters and numbers appear on the screen. Count each time a number appears (For example, if you see A, B, C, 1, 5, D, you would have counted "2" numbers so far).
+
+			At the end of each trial you will be prompted to respond, using your keyboard, how many numbers you counted during that trial. Simply press the corresponding key (0->4).
+		</p>
+
+		<button type="button" onclick="this.blur(); experiment.next()">Start</button>
+
+		<p class="block-text" id="legal">Legal information: By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact Daniel Birman at <a href="dbirman@stanford.edu">dbirman@stanford.edu</a> or Justin Gardner, at jlg@stanford.edu. You must be  at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
+	</div>
+
+	<div class="slide" id="frame">
+		<p id="character">{{}}</p>
+		<img id="dispImg" src={{}}>
+	</div>
+
+	<div class="slide" id="finished">
+		You're finished - thanks for participating! Submitting to Mechanical Turk...
+	</div>
+
+	<script src="cohen.js"></script>
+
+</body>
+</html>

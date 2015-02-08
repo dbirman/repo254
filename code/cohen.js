@@ -69,11 +69,7 @@ function buildTrialDisplay(digits,length) {
 var numberOfDigits = [0,1,2,3,4],
     trialLengths = [12,13,14,15,16,17],
     myDigits = randomElement(numberOfDigits),
-    myTrialLength = randomElement(trialLengths),
-    pOdd = (myKeyBindings["p"] == "odd");
-
-$("#odd-key").html(pOdd ? "P" : "Q");
-$("#even-key").html(pOdd ? "Q" : "P");
+    myTrialLength = randomElement(trialLengths);
 
 showSlide("instructions");
 
@@ -90,14 +86,18 @@ window.requestAnimationFrame = function() {
 }();
 
 
-
 var maskFPS = 15;
 var charFPS = 10;
 var now;
-var then = Date.now();
+var thenMask = Date.now();
+var thenChar = Date.now();
 var maskInterval = 1000/maskFPS;
 var charInterval = 1000/charFPS;
-var delta;
+var deltaChar;
+var deltaMask;
+
+// We're going to check at each "draw" whether we should change the character
+// or the mask. If we do, we change it, if not we keep going.
  
 function draw(charList) {
 	
@@ -125,7 +125,9 @@ function draw(charList) {
 		then = now - (delta % interval);
 		
 	}
-	if (delta > )
+	if (delta > 1) {
+
+	}
 }
  
 draw();

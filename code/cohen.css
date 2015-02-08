@@ -66,6 +66,11 @@ button[disabled] {
   margin-bottom: 1em;
 }
 
+.resp-text {
+	width: 100px;
+	text-align: center;
+}
+
 #legal {
   margin: 0 auto;
   margin-top: 1.5em;
@@ -84,4 +89,10 @@ button[disabled] {
 
 #dispImg {
 	top:;
+	height:256px;
+	width:256px;
+}
+
+#miniImg {
+
 }

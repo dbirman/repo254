@@ -68,8 +68,10 @@ function buildTrialDisplay(digits,length) {
 
 var numberOfDigits = [0,1,2,3,4],
     trialLengths = [12,13,14,15,16,17],
+    catchTrials = [0,1],
     myDigits = randomElement(numberOfDigits),
-    myTrialLength = randomElement(trialLengths);
+    myTrialLength = randomElement(trialLengths),
+    catchTrials = [0,1];
 
 showSlide("instructions");
 
@@ -134,14 +136,27 @@ draw();
 
 
 var experiment = {
-	trials:myTrialOrder,
-	keyBindings: myKeyBindings,
+	digits:myDigits,
+	trialLength:myTrialLength,
 	data: [],
 
 	end: function() {
 		showSlide("finished");
 		setTimeout(function() {turk.submit(experiement)},1500);
 	},
+
+	disp: function() {
+		showSlide("frame");
+		for (i=0; i < digits.length; i++) {
+			cDigit = digits[i];
+			$("#character").html(cDigit);
+		}
+		var startTime = (new Date()).getTime();
+	}
+
+	resp: function() {
+		showSlide("response_regular");
+	}
 
 	next: function() {
 		var n = experiment.trials.shift();

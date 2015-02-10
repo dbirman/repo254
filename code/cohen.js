@@ -117,7 +117,7 @@ showSlide("instructions");
 //	 displays a single trial, calls draw() repeatedly with
 //   parameters and then calls resp() or respC() to get response.
 
-var curTrial = 1;
+var curTrial = 0;
 var postCatchOrder = randomElement([0,1])
 
 var numberOfDigits = [0,1,2,3,4],
@@ -136,6 +136,7 @@ var experiment = {
 	},
 
 	next: function() {
+		curTrial = curTrial + 1;
 		// Start off by setting up our trial structure:
 		// 1,2,3,4 -> Regular trials
 		// 5 -> Catch trial
@@ -177,6 +178,11 @@ var experiment = {
 			$("#inst").show();
 			$("#inst_catch").hide();
 		}
+		if (curTrial==6 || curTrial==11) {
+			$("#inst_warning").show();
+		} else {
+			$("#inst_warning").hide();
+		}
 	},
 
 	ready: function() {
@@ -217,7 +223,7 @@ function drawHelper() {
 	$("#character").text(cChar);
 	flippedChar.push(cChar);		
 	// figure out whether the mask needs to change
-	if (iscatch==1 && (time-started) > (100*trialDisplay.length)-133 && (time-started) < (100*trial.dispDigits.length)-66) {
+	if (iscatch==1 && (time-started) > (100*trialDisplay.length)-133 && (time-started) < (100*trialDisplay.length)-66) {
 		imgFile = "stim/Exp1B_Targets/" + catchImg + ".jpg";
 	} else if ((time - lastMask) > 67) {
 		imgFile = "stim/Masks/ma" + randomElement(maskOpts) + ".jpg";

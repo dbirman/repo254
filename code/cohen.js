@@ -66,133 +66,265 @@ function buildTrialDisplay(digits,length) {
 	return shuffleArray(display);
 }
 
-var numberOfDigits = [0,1,2,3,4],
-    trialLengths = [12,13,14,15,16,17],
-    catchTrials = [0,1],
-    myDigits = randomElement(numberOfDigits),
-    myTrialLength = randomElement(trialLengths),
-    catchTrials = [0,1];
+function now() {
+	return (new Date()).getTime();
+}
 
-showSlide("instructions");
+// (function() {
+//     var lastTime = 0;
+//     var vendors = ['ms', 'moz', 'webkit', 'o'];
+//     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+//         window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+//         window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+//                                    || window[vendors[x]+'CancelRequestAnimationFrame'];
+//     }
+ 
+//     if (!window.requestAnimationFrame)
+//         window.requestAnimationFrame = function(callback, element) {
+//             var currTime = new Date().getTime();
+//             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+//             var id = window.setTimeout(function() { callback(currTime + timeToCall); },
+//               timeToCall);
+//             lastTime = currTime + timeToCall;
+//             return id;
+//         };
+ 
+//     if (!window.cancelAnimationFrame)
+//         window.cancelAnimationFrame = function(id) {
+//             clearTimeout(id);
+//         };
+// }());
 
-// rAF
-window.requestAnimationFrame = function() {
-	return window.requestAnimationFrame ||
+// // rAF
+var requestAnimationFrame = window.requestAnimationFrame ||
 		window.webkitRequestAnimationFrame ||
 		window.mozRequestAnimationFrame ||
 		window.msRequestAnimationFrame ||
-		window.oRequestAnimationFrame ||
-		function(f) {
-			window.setTimeout(f,1e3/60);
-		}
-}();
+		window.oRequestAnimationFrame;
 
+var cancelRAF = window.cancelAnimationFrame ||
+                window.mozCancelAnimationFrame ||
+                window.webkitCancelAnimationFrame ||
+                window.msCancelAnimationFrame;
 
-var maskFPS = 15;
-var charFPS = 10;
-var now;
-var thenMask = Date.now();
-var thenChar = Date.now();
-var maskInterval = 1000/maskFPS;
-var charInterval = 1000/charFPS;
-var deltaChar;
-var deltaMask;
+showSlide("instructions");
 
-// We're going to check at each "draw" whether we should change the character
-// or the mask. If we do, we change it, if not we keep going.
- 
-function draw(charList) {
-	
-	requestAnimationFrame(draw);
-	
-	now = Date.now();
-	delta = now - then;
-	//console.log(delta);
-	
-	if (delta > maskInterval) {
-		// update time stuffs
-		
-		// Just `then = now` is not enough.
-		// Lets say we set fps at 10 which means
-		// each frame must take 100ms
-		// Now frame executes in 16ms (60fps) so
-		// the loop iterates 7 times (16*7 = 112ms) until
-		// delta > interval === true
-		// Eventually this lowers down the FPS as
-		// 112*10 = 1120ms (NOT 1000ms).
-		// So we have to get rid of that extra 12ms
-		// by subtracting delta (112) % interval (100).
-		// Hope that makes sense.
-		
-		then = now - (delta % interval);
-		
-	}
-	if (delta > 1) {
+// Experiment organization:
 
-	}
-}
- 
-draw();
-
+// experiment.run():
+//	 starts a set of trials, sends data to turk, ends experiment.
+// trial.run():
+//	 displays a single trial, calls draw() repeatedly with
+//   parameters and then calls resp() or respC() to get response.
 
 var experiment = {
-	digits:myDigits,
-	trialLength:myTrialLength,
-	data: [],
+	data:[],
 
 	end: function() {
 		showSlide("finished");
-		setTimeout(function() {turk.submit(experiement)},1500);
 	},
 
-	disp: function() {
-		showSlide("frame");
-		for (i=0; i < digits.length; i++) {
-			cDigit = digits[i];
-			$("#character").html(cDigit);
-		}
-		var startTime = (new Date()).getTime();
+	run: function() {
+		trial.run();
 	}
+}
+
+var numberOfDigits = [0,1,2,3,4],
+    trialLengths = [12,13,14,15,16,17],
+    catchTrials = [0,1],
+    images = ['a1','a2','a3','u1','u2','u3'],
+    digits = randomElement(numberOfDigits),
+    trialLength = randomElement(trialLengths),
+    iscatch = randomElement(catchTrials),
+    catchImg = randomElement(images),
+    maskOpts = Array.range(1,300,1),
+    frameID,
+    started;
+
+var trialDisplay = buildTrialDisplay(digits,trialLength);
+
+var drawTime;
+var lastMask = 0;
+var time;
+var flippedChar = [];
+var flippedMask = [];
+var flippedTime = [];
+
+function drawHelper() {
+	time = now();
+	flippedTime.push(time-started)
+	if ((time-started) > (100*trial.dispDigits.length)) {
+		cancelRAF(frameID);
+		trial.resp();
+		return
+	}
+	// figure out what character to show, 100 ms per character
+	charPos = Math.floor((now() - started)/100);
+	cChar = trial.dispDigits[charPos];
+	$("#character").text(cChar);
+	flippedChar.push(cChar);		
+	// figure out whether the mask needs to change
+	if (iscatch==1 && (time-started) > (100*trial.dispDigits.length)-133 && (time-started) < (100*trial.dispDigits.length)-66) {
+		imgFile = "stim/Exp1B_Targets/" + catchImg + ".jpg";
+	} else if ((time - lastMask) > 67) {
+		imgFile = "stim/Masks/ma" + randomElement(maskOpts).toString() + ".jpg";
+		lastMask = time;
+	}
+	flippedMask.push(imgFile);
+	$("#dispImg").attr("src",imgFile);
+	frameID = requestAnimationFrame(drawHelper);
+}
+
+var respQue = 1;
+var regularRT;
+var catch1RT,
+	catch2RT,
+	catch3RT,
+	catch4RT,
+	catch5RT,
+	catch6RT;
+var regResp;
+var catchResp1 = [];
+var catchResp2;
+
+var trial  = {
+	dispDigits: trialDisplay,
+	// digits = list of digits to display on masks
+	// iscatch = whether or not to display a random image
+
+	draw: function(started) {
+		 frameID = requestAnimationFrame(drawHelper);
+	},
+
+	run: function() {
+		showSlide("frame")
+		$("#character").text("!");
+		setTimeout(trial.run2,1000);
+	},
+
+	run2: function() {
+		showSlide("frame")
+		started = now();
+		trial.draw();
+	},
 
 	resp: function() {
-		showSlide("response_regular");
-	}
-
-	next: function() {
-		var n = experiment.trials.shift();
-
-		if (typeof n == "undefined") {
-			return experiment.end();
-		}
-
-		var realParity = (n % 2 == 0) ? "even" : "odd";
-
-		showSlide("frame");
-
-		$("#number").html(n);
-
-		var startTime = (new Date()).getTime();
-
-		var keyPressHandler = function(event) {
-			var keyCode = event.which;
-
-			if (keyCode != 81 && keyCode != 80) {
-				$(document).one("keydown",keyPressHandler);
-			} else {
-				 var endTime = (new Date()).getTime(),
-            key = (keyCode == 80) ? "p" : "q",
-            userParity = experiment.keyBindings[key],
-            data = {
-              stimulus: n,
-              accuracy: realParity == userParity ? 1 : 0,
-              rt: endTime - startTime
-            };
-            experiment.data.push(data);
-            $("#number").html("");
-            setTimeout(experiment.next,500);
+		if (iscatch==1) {
+			showSlide("response_catch");
+			$(".resp-text").hide();
+			switch (respQue) {
+				case 1:
+					catch1RT = now();
+					$("#1").show();
+					break;
+				case 2:
+					catch2RT = now();
+					$("#2").show();
+					break;
+				case 3:
+					catch3RT = now();
+					$("#3").show();
+					break;
+				case 4:
+					catch4RT = now();
+					$("#4").show();
+					break;
+				case 5:
+					catch5RT = now();
+					$("#5").show();
+					break;
+				case 6:
+					catch6RT = now();
+					showSlide("response_catch2");
+					break;
 			}
-		};
+		} else {
+			regularRT = now();
+			showSlide("response_regular")
+		}
+	},
 
-		$(document).one("keydown",keyPressHandler);
+	respYes: function() {
+		trial.eitherResp();
+		catchResp1.push("Y")
+	},
+
+	respNo: function() {
+		trial.eitherResp();
+		catchResp1.push("N")
+	},
+
+	eitherResp: function() {
+		switch (respQue) {
+			case 1:
+				catch1RT = now() - catch1RT;
+			case 2:
+				catch2RT = now() - catch2RT;
+			case 3:
+				catch3RT = now() - catch3RT;
+			case 4:
+				catch4RT = now() - catch4RT;
+			case 5:
+				catch5RT = now() - catch5RT;
+		}
+		respQue = respQue +1;
+		trial.resp();
+	},
+
+	a1: function() {
+		catch6RT = now() - catch6RT;
+		experiment.end();
+		catchResp2 = 'a1';
+	},
+	a2: function() {
+		catch6RT = now() - catch6RT;
+		experiment.end();
+		catchResp2 = 'a2';
+	},
+	a3: function() {
+		catch6RT = now() - catch6RT;
+		experiment.end();
+		catchResp2 = 'a3';
+	},
+	u1: function() {
+		catch6RT = now() - catch6RT;
+		experiment.end();
+		catchResp2 = 'u1';
+	},
+	u2: function() {
+		catch6RT = now() - catch6RT;
+		experiment.end();
+		catchResp2 = 'u2';
+	},
+	u3: function() {
+		catch6RT = now() - catch6RT;
+		experiment.end();
+		catchResp2 = 'u3';
+	},
+
+	resp0: function() {
+		regResp = 0;
+		regularRT = now() - regularRT;
+		experiment.end();
+	},
+	resp1: function() {
+		regResp = 1;
+		regularRT = now() - regularRT;
+		experiment.end();
+	},
+	resp2: function() {
+		regResp = 2;
+		regularRT = now() - regularRT;
+		experiment.end();
+	},
+	resp3: function() {
+		regResp = 3;
+		regularRT = now() - regularRT;
+		experiment.end();
+	},
+	resp4: function() {
+		regResp = 4;
+		regularRT = now() - regularRT;
+		experiment.end();
 	}
 }

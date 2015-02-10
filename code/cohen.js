@@ -190,6 +190,9 @@ var experiment = {
 	},
 
 	setupNext: function() {
+		if (curTrial > 0) {
+			trial.pushData();
+		}
 		showSlide("trial");
 	},
 
@@ -251,6 +254,54 @@ var catchResp2;
 var trial  = {
 	// digits = list of digits to display on masks
 	// iscatch = whether or not to display a random image
+
+	pushData: function() {
+		var trialData = {};
+		if (iscatch==1) {
+			trialData['regRT'] = NaN;
+			trialData['regresp'] = NaN;
+			trialData['catchResp1'] = catchResp1[0];
+			trialData['catchResp2'] = catchResp1[1];
+			trialData['catchResp3'] = catchResp1[2];
+			trialData['catchResp4'] = catchResp1[3];
+			trialData['catchResp5'] = catchResp1[4];
+			trialData['catchImageResp'] = catchResp2;
+			trialData['catchRT1'] = catch1RT;
+			trialData['catchRT2'] = catch2RT;
+			trialData['catchRT3'] = catch3RT;
+			trialData['catchRT4'] = catch4RT;
+			trialData['catchRT5'] = catch5RT;
+			trialData['catchRT6'] = catch6RT;
+		} else {
+			trialData['regRT'] = regularRT;
+			trialData['regResp'] = regResp;
+			trialData['catchResp1'] = NaN;
+			trialData['catchResp2'] = NaN;
+			trialData['catchResp3'] = NaN;
+			trialData['catchResp4'] = NaN;
+			trialData['catchResp5'] = NaN;
+			trialData['catchImageResp'] = NaN;
+			trialData['catchRT1'] = NaN;
+			trialData['catchRT2'] = NaN;
+			trialData['catchRT3'] = NaN;
+			trialData['catchRT4'] = NaN
+			trialData['catchRT5'] = NaN;
+			trialData['catchRT6'] = NaN;
+		}
+		// Always add thesee
+		trialData['catchTrial'] = iscatch;
+		trialData['charStream'] = trialDisplay; //WARNING: THIS IS A LIST
+		trialData['catchImage'] = catchImg;
+		trialData['trialNum'] = curTrial;
+		// Now we reset all the variables
+		respQue = 1;
+		regularRT = 0;
+		catch1RT = 0; catch2RT = 0; catch3RT = 0; catch4RT = 0;
+		catch5RT = 0; catch6RT = 0;
+		regResp = 0;
+		catchResp1 = [];
+		catchResp2 = '';
+	},
 
 	draw: function(started) {
 		 frameID = requestAnimationFrame(drawHelper);

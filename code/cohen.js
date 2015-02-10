@@ -117,6 +117,17 @@ showSlide("instructions");
 //	 displays a single trial, calls draw() repeatedly with
 //   parameters and then calls resp() or respC() to get response.
 
+var curTrial = 1;
+var postCatchOrder = randomElement([0,1])
+
+var numberOfDigits = [0,1,2,3,4],
+    trialLengths = [12,13,14,15,16,17],
+    catchTrials = [0,1],
+    images = ['a1','a2','a3','u1','u2','u3'],
+    maskOpts = Array.range(1,300,1);
+
+var iscatch, digits, trialLength, catchImg, trialDisplay,insts;
+
 var experiment = {
 	data:[],
 
@@ -124,24 +135,65 @@ var experiment = {
 		showSlide("finished");
 	},
 
-	run: function() {
+	next: function() {
+		// Start off by setting up our trial structure:
+		// 1,2,3,4 -> Regular trials
+		// 5 -> Catch trial
+		// 6,7,8,9,10 -> 
+		if (curTrial < 5) {
+			// regular trial
+			iscatch = 0; insts = 0;
+		} else if (curTrial == 5) {
+			iscatch = 1; insts = 0;
+			// catch trial
+		} else if (curTrial < 11) {
+			if (postCatchOrder == 1) {
+				// background task first
+				iscatch = 1; insts = 1;
+			} else {
+				// RSVP task first
+				iscatch = 0; insts = 0;
+			}
+		} else {
+			if (postCatchOrder == 1) {
+				// now do the RSVP task
+				iscatch = 0; insts = 0;
+			} else {
+				// now background task
+				iscatch = 1; insts = 1;
+			}
+
+		}
+		// Setup ALL TRIAL infos:
+		digits = randomElement(numberOfDigits);
+		trialLength = randomElement(trialLengths);
+		catchImg = randomElement(images);
+		trialDisplay = buildTrialDisplay(digits,trialLength);
+		showSlide("trial_instructions")
+		if (insts==1) {
+			$("#inst").hide();
+			$("#inst_catch").show();
+		} else {
+			$("#inst").show();
+			$("#inst_catch").hide();
+		}
+	},
+
+	ready: function() {
 		trial.run();
+	},
+
+	setupNext: function() {
+		showSlide("trial");
+	},
+
+	run: function() {
+		experiment.setupNext();
 	}
 }
 
-var numberOfDigits = [0,1,2,3,4],
-    trialLengths = [12,13,14,15,16,17],
-    catchTrials = [0,1],
-    images = ['a1','a2','a3','u1','u2','u3'],
-    digits = randomElement(numberOfDigits),
-    trialLength = randomElement(trialLengths),
-    iscatch = randomElement(catchTrials),
-    catchImg = randomElement(images),
-    maskOpts = Array.range(1,300,1),
-    frameID,
+var frameID,
     started;
-
-var trialDisplay = buildTrialDisplay(digits,trialLength);
 
 var drawTime;
 var lastMask = 0;
@@ -154,18 +206,18 @@ var frameImg = $("#dispImg");
 function drawHelper() {
 	time = now();
 	flippedTime.push(time-started)
-	if ((time-started) > (100*trial.dispDigits.length)) {
+	if ((time-started) > (100*trialDisplay.length)) {
 		cancelRAF(frameID);
 		trial.resp();
 		return
 	}
 	// figure out what character to show, 100 ms per character
 	charPos = Math.floor((now() - started)/100);
-	cChar = trial.dispDigits[charPos];
+	cChar = trialDisplay[charPos];
 	$("#character").text(cChar);
 	flippedChar.push(cChar);		
 	// figure out whether the mask needs to change
-	if (iscatch==1 && (time-started) > (100*trial.dispDigits.length)-133 && (time-started) < (100*trial.dispDigits.length)-66) {
+	if (iscatch==1 && (time-started) > (100*trialDisplay.length)-133 && (time-started) < (100*trial.dispDigits.length)-66) {
 		imgFile = "stim/Exp1B_Targets/" + catchImg + ".jpg";
 	} else if ((time - lastMask) > 67) {
 		imgFile = "stim/Masks/ma" + randomElement(maskOpts) + ".jpg";
@@ -191,7 +243,6 @@ var catchResp2;
 
 
 var trial  = {
-	dispDigits: trialDisplay,
 	// digits = list of digits to display on masks
 	// iscatch = whether or not to display a random image
 
@@ -201,7 +252,8 @@ var trial  = {
 
 	run: function() {
 		showSlide("frame")
-		$("#character").text("!");
+		$("#character").text("");
+		frameImg.attr("src","stim/Masks/start.jpg");
 		setTimeout(trial.run2,1000);
 	},
 
@@ -276,58 +328,58 @@ var trial  = {
 
 	a1: function() {
 		catch6RT = now() - catch6RT;
-		experiment.end();
+		experiment.setupNext();
 		catchResp2 = 'a1';
 	},
 	a2: function() {
 		catch6RT = now() - catch6RT;
-		experiment.end();
+		experiment.setupNext();
 		catchResp2 = 'a2';
 	},
 	a3: function() {
 		catch6RT = now() - catch6RT;
-		experiment.end();
+		experiment.setupNext();
 		catchResp2 = 'a3';
 	},
 	u1: function() {
 		catch6RT = now() - catch6RT;
-		experiment.end();
+		experiment.setupNext();
 		catchResp2 = 'u1';
 	},
 	u2: function() {
 		catch6RT = now() - catch6RT;
-		experiment.end();
+		experiment.setupNext();
 		catchResp2 = 'u2';
 	},
 	u3: function() {
 		catch6RT = now() - catch6RT;
-		experiment.end();
+		experiment.setupNext();
 		catchResp2 = 'u3';
 	},
 
 	resp0: function() {
 		regResp = 0;
 		regularRT = now() - regularRT;
-		experiment.end();
+		experiment.setupNext();
 	},
 	resp1: function() {
 		regResp = 1;
 		regularRT = now() - regularRT;
-		experiment.end();
+		experiment.setupNext();
 	},
 	resp2: function() {
 		regResp = 2;
 		regularRT = now() - regularRT;
-		experiment.end();
+		experiment.setupNext();
 	},
 	resp3: function() {
 		regResp = 3;
 		regularRT = now() - regularRT;
-		experiment.end();
+		experiment.setupNext();
 	},
 	resp4: function() {
 		regResp = 4;
 		regularRT = now() - regularRT;
-		experiment.end();
+		experiment.setupNext();
 	}
 }

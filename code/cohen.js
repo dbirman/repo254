@@ -74,13 +74,13 @@ function now() {
 //     var lastTime = 0;
 //     var vendors = ['ms', 'moz', 'webkit', 'o'];
 //     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-//         window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-//         window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame']
+//         requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+//         cancelRAF = window[vendors[x]+'CancelAnimationFrame']
 //                                    || window[vendors[x]+'CancelRequestAnimationFrame'];
 //     }
  
-//     if (!window.requestAnimationFrame)
-//         window.requestAnimationFrame = function(callback, element) {
+//     if (!requestAnimationFrame)
+//         requestAnimationFrame = function(callback, element) {
 //             var currTime = new Date().getTime();
 //             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
 //             var id = window.setTimeout(function() { callback(currTime + timeToCall); },
@@ -89,8 +89,8 @@ function now() {
 //             return id;
 //         };
  
-//     if (!window.cancelAnimationFrame)
-//         window.cancelAnimationFrame = function(id) {
+//     if (!cancelRAF)
+//         cancelRAF = function(id) {
 //             clearTimeout(id);
 //         };
 // }());
@@ -149,6 +149,7 @@ var time;
 var flippedChar = [];
 var flippedMask = [];
 var flippedTime = [];
+var frameImg = $("#dispImg");
 
 function drawHelper() {
 	time = now();
@@ -167,11 +168,12 @@ function drawHelper() {
 	if (iscatch==1 && (time-started) > (100*trial.dispDigits.length)-133 && (time-started) < (100*trial.dispDigits.length)-66) {
 		imgFile = "stim/Exp1B_Targets/" + catchImg + ".jpg";
 	} else if ((time - lastMask) > 67) {
-		imgFile = "stim/Masks/ma" + randomElement(maskOpts).toString() + ".jpg";
+		imgFile = "stim/Masks/ma" + randomElement(maskOpts) + ".jpg";
 		lastMask = time;
 	}
 	flippedMask.push(imgFile);
-	$("#dispImg").attr("src",imgFile);
+	frameImg.attr("src",imgFile);
+	// frameImg.src = imgFile;
 	frameID = requestAnimationFrame(drawHelper);
 }
 
@@ -186,6 +188,7 @@ var catch1RT,
 var regResp;
 var catchResp1 = [];
 var catchResp2;
+
 
 var trial  = {
 	dispDigits: trialDisplay,

@@ -60,7 +60,9 @@ function buildTrialDisplay(digits,length) {
 	for (i = 0; i < length-digits; i++) {
 		display[i] = randomElement(chars);
 	}
+	var used = []; // ADDING A CHECK TO MAKE SURE NO REPEATS OCCUR
 	for (i=length-digits; i < length; i++) {
+		next = randomElement(numbers);
 		display[i] = randomElement(numbers);
 	}
 	return shuffleArray(display);

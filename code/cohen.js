@@ -294,7 +294,7 @@ var trial  = {
 		trialData['catchImage'] = catchImg;
 		trialData['trialNum'] = curTrial;
 		// Now we reset all the variables
-		respQue = 1;
+		respQue = 6;
 		regularRT = 0;
 		catch1RT = 0; catch2RT = 0; catch3RT = 0; catch4RT = 0;
 		catch5RT = 0; catch6RT = 0;

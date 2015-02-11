@@ -133,6 +133,39 @@ var experiment = {
 
 	end: function() {
 		showSlide("finished");
+		var score4 = 0,
+			crit = '',
+			stream = 0,
+			backg = 0;
+		for (t = 0; t < experiment.data.length; t++) {
+			dat = experiment.data[t];
+			if (dat.iscatch==1) {
+				if (dat.trialNum == 5) {
+					if (dat.catchImage==dat.catchImageResp) {
+						crit = 'yes';
+					} else {
+						crit = 'no';
+					}
+				} else {
+					if (dat.catchImage==dat.catchImageResp) {
+						backg++;
+					}
+				}
+			} else {
+				if (dat.trialNum < 5) {
+					if (dat.regResp == dat.digits) {
+						score4++;
+					}
+				} else if (dat.regResp == dat.digits) {
+					stream++;
+				}
+			}
+		}
+		$("#score").text(score4);
+		$("#score2").text(4);
+		$("#crit").text(crit);
+		$("#stream").text(stream);
+		$("#backg").text(backg);
 	},
 
 	next: function() {
@@ -220,6 +253,8 @@ function drawHelper() {
 	flippedTime.push(time-started)
 	if ((time-started) > (100*trialDisplay.length)) {
 		cancelRAF(frameID);
+		$("#character").text('');
+		frameImg.attr("src",'');
 		trial.resp();
 		return
 	}
@@ -305,7 +340,12 @@ var trial  = {
 		//Add to experiment.data
 		experiment.data.push(trialData);
 		// Now we reset all the variables
-		respQue = 6;
+		if (curTrial > 5) {
+			respQue = 6;
+		} else {
+			respQue = 1;
+		}
+		respQue = 1;
 		regularRT = 0;
 		catch1RT = 0; catch2RT = 0; catch3RT = 0; catch4RT = 0;
 		catch5RT = 0; catch6RT = 0;

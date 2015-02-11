@@ -18,9 +18,9 @@
 		<p> </p>
 		<img src="stim/stanford.png" alt="Stanford University">
 		<p> </p>
-		<p class="block-text">In this experiment, you will see a rapid set of letters and numbers appear on the screen. Count each time a number appears (For example, if you see A, B, C, 1, 5, D, you would have counted "2" numbers so far).
+		<p class="block-text">In this experiment, you will see a rapid set of letters and numbers appear on the screen. Count each time a number appears (For example, if you see A, B, C, 1, 5, D, you would have counted "2" numbers so far). At the end of each trial you will be prompted to tell us how many numbers you counted. 
 
-			At the end of each trial you will be prompted to respond, using your keyboard, how many numbers you counted during that trial. Simply press the corresponding key (0->4).
+		Payment: You will be paid $0.60 for participating in this experiment. We expect the experiment to take no more than 10 minutes.
 		</p>
 
 		<button type="button" onclick="this.blur(); experiment.run()">Start</button>
@@ -81,20 +81,22 @@
 	</div>
 
 	<div class="slide" id="response_catch2">
-		<p class="resp-text" id="instructions">
+		<p class="resp-text-catch">
 			Press the image you think that you saw.
 		</p>
-		<img id="miniImg" onclick="trial.a1()" src="stim/Exp1B_Targets/a1.jpg" height="256" width="256">
-		<img id="miniImg" onclick="trial.a2()" src="stim/Exp1B_Targets/a2.jpg" height="256" width="256">
-		<img id="miniImg" onclick="trial.a3()" src="stim/Exp1B_Targets/a3.jpg" height="256" width="256">
+		<img id="miniImg" onclick="trial.a1()" src="stim/Exp1B_Targets/a1.jpg">
+		<img id="miniImg" onclick="trial.a2()" src="stim/Exp1B_Targets/a2.jpg">
+		<img id="miniImg" onclick="trial.a3()" src="stim/Exp1B_Targets/a3.jpg">
 		<p></p>
-		<img id="miniImg" onclick="trial.u1()" src="stim/Exp1B_Targets/u1.jpg" height="256" width="256">
-		<img id="miniImg" onclick="trial.u2()" src="stim/Exp1B_Targets/u2.jpg" height="256" width="256">
-		<img id="miniImg" onclick="trial.u3()" src="stim/Exp1B_Targets/u3.jpg" height="256" width="256">
+		<img id="miniImg" onclick="trial.u1()" src="stim/Exp1B_Targets/u1.jpg">
+		<img id="miniImg" onclick="trial.u2()" src="stim/Exp1B_Targets/u2.jpg">
+		<img id="miniImg" onclick="trial.u3()" src="stim/Exp1B_Targets/u3.jpg">
 	</div>
 
 	<div class="slide" id="finished">
-		You're finished - thanks for participating! Submitting to Mechanical Turk...
+		You're finished - thanks for participating! Your data will automatically be submitted to Mechanical Turk...
+
+		Please read: This experiment relies on the fact that participants do not know in advance that they will be asked about the scenes in the background. If you choose to review this HIT for others please do not relay this information!
 	</div>
 
 	<script src="cohen.js"></script>

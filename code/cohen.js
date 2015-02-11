@@ -155,7 +155,7 @@ var experiment = {
 				// RSVP task first
 				iscatch = 0; insts = 0;
 			}
-		} else {
+		} else if (curTrial < 16) {
 			if (postCatchOrder == 1) {
 				// now do the RSVP task
 				iscatch = 0; insts = 0;
@@ -164,6 +164,9 @@ var experiment = {
 				iscatch = 1; insts = 1;
 			}
 
+		} else {
+			experiment.end();
+			return;
 		}
 		// Setup ALL TRIAL infos:
 		digits = randomElement(numberOfDigits);
@@ -292,7 +295,15 @@ var trial  = {
 		trialData['catchTrial'] = iscatch;
 		trialData['charStream'] = trialDisplay; //WARNING: THIS IS A LIST
 		trialData['catchImage'] = catchImg;
+		trialData['digits'] = digits;
+		trialData['streamLength'] = trialLength;
 		trialData['trialNum'] = curTrial;
+		// Flip data
+		trialData['flipTime'] = flippedTime; // LIST
+		trialData['flipChar'] = flippedChar; // LIST
+		trialData['flipMask'] = flippedMask; // LIST
+		//Add to experiment.data
+		experiment.data.push(trialData);
 		// Now we reset all the variables
 		respQue = 1;
 		regularRT = 0;
@@ -385,33 +396,33 @@ var trial  = {
 
 	a1: function() {
 		catch6RT = now() - catch6RT;
-		experiment.setupNext();
 		catchResp2 = 'a1';
+		experiment.setupNext();
 	},
 	a2: function() {
 		catch6RT = now() - catch6RT;
-		experiment.setupNext();
 		catchResp2 = 'a2';
+		experiment.setupNext();
 	},
 	a3: function() {
 		catch6RT = now() - catch6RT;
-		experiment.setupNext();
 		catchResp2 = 'a3';
+		experiment.setupNext();
 	},
 	u1: function() {
 		catch6RT = now() - catch6RT;
-		experiment.setupNext();
 		catchResp2 = 'u1';
+		experiment.setupNext();
 	},
 	u2: function() {
 		catch6RT = now() - catch6RT;
-		experiment.setupNext();
 		catchResp2 = 'u2';
+		experiment.setupNext();
 	},
 	u3: function() {
 		catch6RT = now() - catch6RT;
-		experiment.setupNext();
 		catchResp2 = 'u3';
+		experiment.setupNext();
 	},
 
 	resp0: function() {

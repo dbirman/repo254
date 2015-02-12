@@ -60,11 +60,13 @@ function buildTrialDisplay(digits,length) {
 	for (i = 0; i < length-digits; i++) {
 		display[i] = randomElement(chars);
 	}
-	var used = []; // ADDING A CHECK TO MAKE SURE NO REPEATS OCCUR
-	for (i=length-digits; i < length; i++) {
+	var used = []; // This code makes sure we never add the same digit more than once
+	next = randomElement(numbers);
+	while (used.indexOf(next) > -1) {
 		next = randomElement(numbers);
-		display[i] = randomElement(numbers);
 	}
+	used.push(next);
+	display[i] = randomElement(numbers);
 	return shuffleArray(display);
 }
 
@@ -98,16 +100,16 @@ function now() {
 // }());
 
 // // rAF
-var requestAnimationFrame = window.requestAnimationFrame ||
-		window.webkitRequestAnimationFrame ||
-		window.mozRequestAnimationFrame ||
-		window.msRequestAnimationFrame ||
-		window.oRequestAnimationFrame;
+// var requestAnimationFrame = window.requestAnimationFrame ||
+// 		window.webkitRequestAnimationFrame ||
+// 		window.mozRequestAnimationFrame ||
+// 		window.msRequestAnimationFrame ||
+// 		window.oRequestAnimationFrame;
 
-var cancelRAF = window.cancelAnimationFrame ||
-                window.mozCancelAnimationFrame ||
-                window.webkitCancelAnimationFrame ||
-                window.msCancelAnimationFrame;
+// var cancelRAF = window.cancelAnimationFrame ||
+//                 window.mozCancelAnimationFrame ||
+//                 window.webkitCancelAnimationFrame ||
+//                 window.msCancelAnimationFrame;
 
 showSlide("instructions");
 
@@ -217,13 +219,13 @@ var flippedMask = [];
 var flippedTime = [];
 var frameImg = $("#dispImg");
 
-var maskInt = 67;
+var maskInt = 100;
 
 function drawHelper() {
 	time = now();
 	flippedTime.push(time-started)
 	if ((time-started) > (100*trialDisplay.length)) {
-		cancelRAF(frameID);
+		window.cancelAnimationFrame(frameID);
 		trial.resp();
 		return
 	}
@@ -244,7 +246,7 @@ function drawHelper() {
 	frameImg.attr("src",filename);
 	// frameImg.update();
 	// frameImg.src = imgFile;
-	frameID = requestAnimationFrame(drawHelper);
+	frameID = window.requestAnimationFrame(drawHelper);
 }
 
 var respQue = 1;
@@ -321,7 +323,7 @@ var trial  = {
 	},
 
 	draw: function(started) {
-		 frameID = requestAnimationFrame(drawHelper);
+		 frameID = window.requestAnimationFrame(drawHelper);
 	},
 
 	run: function() {

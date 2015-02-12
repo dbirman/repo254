@@ -42,8 +42,9 @@ button[disabled] {
 	cursor: not-allowed;
 }
 
-rbutton {
-	position:relative;
+#trial_instructions {
+	width: 200px;
+	margin:0 auto;
 }
 
 #logo-text {
@@ -65,19 +66,21 @@ rbutton {
 
 .block-text {
   width: 500px;
-  text-align: justify;
   margin: 0 auto;
   margin-bottom: 1em;
 }
 
 .resp-text {
-	width: 100px;
-	text-align: center;
+	width: 200px;
 	position:absolute;
 }
 .resp-text-catch {
-	text-align:left;
+	width: 200px;
+	text-align: center;
 	position:relative;
+}
+.multi-parent {
+	text-align:center;
 }
 
 #legal {

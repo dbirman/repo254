@@ -5,6 +5,26 @@ function showSlide(id) {
 	$("#"+id).show();
 }
 
+function launchFullScreen(element) {
+  if(element.requestFullScreen) {
+    element.requestFullScreen();
+  } else if(element.mozRequestFullScreen) {
+    element.mozRequestFullScreen();
+  } else if(element.webkitRequestFullScreen) {
+    element.webkitRequestFullScreen();
+  }
+}
+
+function exitFullscreen() {
+  if(document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if(document.mozCancelFullScreen) {
+    document.mozCancelFullScreen();
+  } else if(document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+}
+
 /**
  * http://stackoverflow.com/questions/3895478/does-javascript-have-a-method-like-range-to-generate-an-array-based-on-suppl
 */
@@ -70,6 +90,16 @@ function buildTrialDisplay(digits,length) {
 	return shuffleArray(display);
 }
 
+$(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', exitHandler);
+
+function exitHandler()
+{
+    if (!document.webkitIsFullScreen && !document.mozFullScreen && !(document.msFullscreenElement))
+    {
+        showSlide("full-exit");
+    }
+}
+
 function now() {
 	return (new Date()).getTime();
 }
@@ -130,12 +160,13 @@ var numberOfDigits = [0,1,2,3,4],
     images = ['a1','a2','a3','u1','u2','u3'],
     maskOpts = Array.range(1,300,1);
 
-var iscatch, digits, trialLength, catchImg, trialDisplay,insts;
+var iscatch, digits, trialLength, catchImg, trialDisplay, insts;
 
 var experiment = {
 	data:[],
 
 	end: function() {
+		exitFullscreen();
 		showSlide("finished");
 	},
 
@@ -203,8 +234,17 @@ var experiment = {
 		showSlide("trial");
 	},
 
+	addFullscreenEvents_setupNext: function() {
+		document.addEventListener('webkitfullscreenchange', exitHandler, false);
+	    document.addEventListener('mozfullscreenchange', exitHandler, false);
+	    document.addEventListener('fullscreenchange', exitHandler, false);
+	    document.addEventListener('MSFullscreenChange', exitHandler, false);
+	    experiment.setupNext();
+	},
+
 	run: function() {
-		experiment.setupNext();
+		launchFullScreen(document.documentElement);
+		experiment.addFullscreenEvents_setupNext();
 	}
 }
 

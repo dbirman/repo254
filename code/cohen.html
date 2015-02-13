@@ -13,14 +13,16 @@
 
 <body>
 
-	<div class="slide" id="instructions">
+	<div class="slide multi-parent" id="instructions">
 		<img src="stim/grulab.png" alt="Gardner Lab @ Stanford University">
 		<p> </p>
 		<img src="stim/stanford.png" alt="Stanford University">
 		<p> </p>
-		<p class="block-text">In this experiment, you will see a rapid set of letters and numbers appear on the screen. Count each time a number appears (For example, if you see A, B, C, 1, 5, D, you would have counted "2" numbers so far). At the end of each trial you will be prompted to tell us how many numbers you counted. 
-
+		<p class="block-text">In this experiment, you will see a rapid set of letters and numbers appear on the screen. Count each time a number appears (For example, if you see A, B, C, 1, 5, D, you would have counted "2" numbers so far). At the end of each trial you will be prompted to tell us how many numbers you counted. Please read the instructions carefully on every trial--they may change throughout the experiment.
+		</p> <p>
 		Payment: You will be paid $0.60 for participating in this experiment. We expect the experiment to take no more than 10 minutes.
+		</p> <p>
+		Please note: This experiment runs in FULL SCREEN mode. If your browser does not support full screen mode you MUST upgrade. Check http://johndyer.name/lab/fullscreenapi/ to see whether your browser supports full screen. Exiting fullscreen during the experiment will show up in Mechanical Turk as having 'dropped out', refreshing the page and continuing will solve this.
 		</p>
 
 		<button type="button" onclick="this.blur(); experiment.run()">Start</button>
@@ -30,6 +32,10 @@
 
 	<div class="slide multi-parent" id="trial">
 		<button type="button" onclick="this.blur(); experiment.next()">Press for Next Trial</button>
+	</div>
+
+	<div class="slide multi-parent" id="full-exit">
+		<p>We're really sorry but you are required to run this experiment in full screen mode. Please re-read the instructions page if you aren't sure about the study requirements. Because you didn't complete the full study Mechanical Turk was not informed of your completion! Please reset the web page and continue the experiment!! If you feel like this occurred due to an error or a bug please contact Daniel Birman at dbirman@stanford.edu.</p>
 	</div>
 
 	<div class="slide multi-parent" id="trial_instructions">

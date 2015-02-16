@@ -1,7 +1,9 @@
 ## Auth file
 
 mturk-and-gmail.text
-*.json
+auth.json
+dgb-auth.json
+settings.json
 
 ## R
 

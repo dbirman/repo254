@@ -1,5 +1,3 @@
-// var $ = document.querySelector.bind(document);
-
 function showSlide(id) {
 	$(".slide").hide();
 	$("#"+id).show();
@@ -47,6 +45,19 @@ Array.range= function(a, b, step){
         A= s.split('');        
     }
     return A;
+}
+
+var imageList = new Array()
+
+function preload() {
+	for (i = 0; i < 300; i++) {
+		imageList[i] = new Image();
+		imageList[i].src = "stim/Masks/ma" + (i+1) + ".jpg";
+	}
+	for (i = 0; i < 6; i++) {
+		imageList [300+i] = new Image();
+		imageList[300+i].src = "stim/Exp1B_Targets/" + images[i] + ".jpg";
+	}
 }
 
 /**
@@ -159,6 +170,8 @@ var numberOfDigits = [0,1,2,3,4],
     catchTrials = [0,1],
     images = ['a1','a2','a3','u1','u2','u3'],
     maskOpts = Array.range(1,300,1);
+
+preload();
 
 var iscatch, digits, trialLength, catchImg, trialDisplay, insts;
 

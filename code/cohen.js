@@ -1,3 +1,4 @@
+
 function showSlide(id) {
 	$(".slide").hide();
 	$("#"+id).show();
@@ -47,16 +48,51 @@ Array.range= function(a, b, step){
     return A;
 }
 
-var imageList = new Array()
+var imageSrcList = new Array();
+var imageList = new Array();
 
-function preload() {
+
+function preload(images, onLoadedOne, onLoadedAll) {
+  var remainingImages = images.slice();
+  var finished = false;
+
+  // set delayInterval to 800 for testing to see that everything actually loads
+  // for real use, set to 0 
+  var loadDelayInterval = 0;
+
+  var worker = function() {
+    if (remainingImages.length == 0) {
+      if (!finished) {
+        finished = true;
+        setTimeout(onLoadedAll, loadDelayInterval);
+      }
+    } else {
+
+      var src = remainingImages.shift(); 
+      
+      var image = new Image();
+      image.onload = function() {
+        onLoadedOne();
+        setTimeout(worker, loadDelayInterval);
+      };
+      image.src = src;
+      imageList.push(image);
+    }
+  };
+
+  // load images 6 at a time
+  var concurrent = 5;
+  for(var i = 0; i < concurrent; i++) {
+    setTimeout(worker, 20 - i);
+  };
+}
+
+function preloadSetup() {
 	for (i = 0; i < 300; i++) {
-		imageList[i] = new Image();
-		imageList[i].src = "stim/Masks/ma" + (i+1) + ".jpg";
+		imageSrcList.push("stim/Masks/ma" + (i+1) + ".jpg");
 	}
 	for (i = 0; i < 6; i++) {
-		imageList [300+i] = new Image();
-		imageList[300+i].src = "stim/Exp1B_Targets/" + images[i] + ".jpg";
+		imageSrcList.push("stim/Exp1B_Targets/" + images[i] + ".jpg");
 	}
 }
 
@@ -115,52 +151,53 @@ function now() {
 	return (new Date()).getTime();
 }
 
-// (function() {
-//     var lastTime = 0;
-//     var vendors = ['ms', 'moz', 'webkit', 'o'];
-//     for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
-//         requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
-//         cancelRAF = window[vendors[x]+'CancelAnimationFrame']
-//                                    || window[vendors[x]+'CancelRequestAnimationFrame'];
-//     }
- 
-//     if (!requestAnimationFrame)
-//         requestAnimationFrame = function(callback, element) {
-//             var currTime = new Date().getTime();
-//             var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-//             var id = window.setTimeout(function() { callback(currTime + timeToCall); },
-//               timeToCall);
-//             lastTime = currTime + timeToCall;
-//             return id;
-//         };
- 
-//     if (!cancelRAF)
-//         cancelRAF = function(id) {
-//             clearTimeout(id);
-//         };
-// }());
+/* global turk, store, location */
 
-// // rAF
-// var requestAnimationFrame = window.requestAnimationFrame ||
-// 		window.webkitRequestAnimationFrame ||
-// 		window.mozRequestAnimationFrame ||
-// 		window.msRequestAnimationFrame ||
-// 		window.oRequestAnimationFrame;
+var fingerprint;
 
-// var cancelRAF = window.cancelAnimationFrame ||
-//                 window.mozCancelAnimationFrame ||
-//                 window.webkitCancelAnimationFrame ||
-//                 window.msCancelAnimationFrame;
+function setGeo(data) {
+  fingerprint.ip = data.ip;
+  fingerprint.geo = data; 
+}
 
-showSlide("instructions");
+(function() {
+  
+  fingerprint = {
+    browser: navigator.userAgent,
+    screenWidth: screen.width,
+    screenHeight: screen.height,
+    colorDepth: screen.colorDepth,
+    ip: "",
+    geo: "",
+    timezone: new Date().getTimezoneOffset(),
+    plugins: Array.prototype.slice.call(navigator.plugins).map(function(x) { return {filename: x.filename, description: x.description}})
+  }
 
-// Experiment organization:
 
-// experiment.run():
-//	 starts a set of trials, sends data to turk, ends experiment.
-// trial.run():
-//	 displays a single trial, calls draw() repeatedly with
-//   parameters and then calls resp() or respC() to get response.
+  var isLocal = /file/.test(location.protocol);
+  
+  // inject a call to a json service that will give us geolocation information 
+  var protocol = isLocal ? "http://" : "//";
+  var src = protocol + "freegeoip.net/json/?callback=setGeo";
+
+  var scriptEl = document.createElement('script');
+  scriptEl.src = protocol + "freegeoip.net/json/?callback=setGeo";
+  
+  document.body.appendChild(scriptEl);
+
+})()
+
+var numLoadedImages = 0;
+function onLoadedOne() {
+  numLoadedImages++;
+  $("#num-loaded").text(numLoadedImages); 
+}
+
+// define a function that will get called once
+// all images have been successfully loaded
+function onLoadedAll() {
+  showSlide("instructions");
+}
 
 var curTrial = 0;
 var postCatchOrder = randomElement([0,1])
@@ -171,16 +208,27 @@ var numberOfDigits = [0,1,2,3,4],
     images = ['a1','a2','a3','u1','u2','u3'],
     maskOpts = Array.range(1,300,1);
 
-preload();
 
 var iscatch, digits, trialLength, catchImg, trialDisplay, insts;
 
+showSlide("loading");
+preloadSetup();
+$("#num-total").text(imageSrcList.length);
+preload(imageSrcList,onLoadedOne,onLoadedAll);
+
+var allData = [];
+
+allData.push({ip_info:fingerprint});
+// allData.push({ip_info:fingerprint,workerId:turk.workerId,assignId:turk.assignmentId});
+allData.push({digitNums:numberOfDigits,trialLengths:trialLengths,catchOpts:catchTrials,imageOpts:images,maskOpts:maskOpts});
+
 var experiment = {
-	data:[],
 
 	end: function() {
+		exitHandler = undefined;
 		exitFullscreen();
 		showSlide("finished");
+		setTimeout(function() { turk.submit(allData) }, 1500);
 	},
 
 	next: function() {
@@ -242,7 +290,11 @@ var experiment = {
 
 	setupNext: function() {
 		if (curTrial > 0) {
-			trial.pushData();
+			if (turk.previewMode) {
+				experiment.end();
+			} else {
+				trial.pushData();
+			}
 		}
 		showSlide("trial");
 	},
@@ -256,8 +308,12 @@ var experiment = {
 	},
 
 	run: function() {
-		launchFullScreen(document.documentElement);
-		experiment.addFullscreenEvents_setupNext();
+		if (turk.previewMode) {
+			experiment.setupNext();
+		} else {
+			launchFullScreen(document.documentElement);
+			experiment.addFullscreenEvents_setupNext();
+		}
 	}
 }
 
@@ -364,9 +420,13 @@ var trial  = {
 		trialData['flipChar'] = flippedChar; // LIST
 		trialData['flipMask'] = flippedMask; // LIST
 		//Add to experiment.data
-		experiment.data.push(trialData);
+		allData.push(trialData);
 		// Now we reset all the variables
-		respQue = 6;
+		if (curTrial > 4) {
+			respQue = 6;
+		} else {
+			respQue = 1;
+		}
 		regularRT = 0;
 		catch1RT = 0; catch2RT = 0; catch3RT = 0; catch4RT = 0;
 		catch5RT = 0; catch6RT = 0;

@@ -141,10 +141,12 @@ $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFu
 
 function exitHandler()
 {
-    if (!document.webkitIsFullScreen && !document.mozFullScreen && !(document.msFullscreenElement))
-    {
-        showSlide("full-exit");
-    }
+	if (watchingFull) {
+	    if (!document.webkitIsFullScreen && !document.mozFullScreen && !(document.msFullscreenElement))
+	    {
+	        showSlide("full-exit");
+	    }
+	}	
 }
 
 function now() {
@@ -211,6 +213,8 @@ var numberOfDigits = [0,1,2,3,4],
 
 var iscatch, digits, trialLength, catchImg, trialDisplay, insts;
 
+watchingFull = true;
+
 showSlide("loading");
 preloadSetup();
 $("#num-total").text(imageSrcList.length);
@@ -225,7 +229,7 @@ allData.push({digitNums:numberOfDigits,trialLengths:trialLengths,catchOpts:catch
 var experiment = {
 
 	end: function() {
-		exitHandler = undefined;
+		watchingFull = false;
 		exitFullscreen();
 		showSlide("finished");
 		setTimeout(function() { turk.submit(allData) }, 1500);
@@ -423,7 +427,7 @@ var trial  = {
 		allData.push(trialData);
 		// Now we reset all the variables
 		if (curTrial > 4) {
-			respQue = 6;
+			respQue = 4;
 		} else {
 			respQue = 1;
 		}

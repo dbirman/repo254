@@ -178,11 +178,19 @@ levels(d$operand) <- c("addition","subtraction")
 Data Analysis Preliminaries
 ---------------------------
 
+Addition/subtraction condition
+
+X1->X40 Subjects
+RT is in ms, is it a number or not a number
+Subject awareness: did you see a number o rnot yes/no (s.test)
+Object value: Parity judgment was it even or odd (o.test)
+Re-create the graph which shows that congruency facilitates the effect (see paper), significant effects for addition.
+
 Examine the basic properties of the dataset. First, take a histogram.
 
 ```{r}
 ggplot(d) +
-  geom_histogram(aes(x=RT),stat='identity')
+  geom_histogram(aes(x=RT,color=congruent))
 ```
 
 Challenge question: what is the sample rate of the input device they are using to gather RTs?
@@ -198,11 +206,23 @@ It's a little hard to be sure, but based on the fact that the sorted times tend 
 Sklar et al. did two manipulation checks. Subjective - asking participants whether they saw the primes - and objective - asking them to report the parity of the primes (even or odd) to find out if they could actually read the primes when they tried. Examine both the unconscious and conscious manipulation checks (this information is stored in subinfo). What do you see? Are they related to one another?
 
 ```{r} 
+# We'll check first if we can explain the o.test data using the s.test data
+rs = lm(data=subinfo,objective.test ~ subjective.test)
+summary(rs)
+ggplot(data=subinfo,aes(subjective.test,objective.test)) +
+  geom_point() +
+  geom_smooth(method='lm',color='orange')
 ```
+
+The subjective test and objective test data show a close correlation, `r round(cor(subinfo$subjective.test,subinfo$objective.test),2)`. In addition, about one third of the variance in each can be explained by the other data, $\beta_{subj} = .21, p < .001, F(1,40) = 20.14, p < .001$.
+
 
 OK, let's turn back to the measure and implement Sklar et al.'s exclusion criterion. You need to have said you couldn't see (subjective test) and also be not significantly above chance on the objective test (< .6 correct). Call your new data frame `ds`.
 
 ```{r}
+ds = d %>%
+  filter(o.test<.6) %>%
+  filter(s.test==0)
 ```
 
 Sklar et al.'s analysis
@@ -213,18 +233,35 @@ Sklar et al. show a plot of a "facilitation effect" - the time to respond to inc
 HINT: first take averages within subjects, then compute your error bars across participants, using the `sem` function (defined above). 
 
 ```{r}
+out = ds %>%
+  group_by(sid,congruent,ptime,operand) %>%
+  filter(RT>0) %>%
+  summarize(mu=mean(RT))
+# Don't know how to do this step with dplyr
+out2 = data.frame(sid=out$sid[out$congruent=='no'],dif= out$mu[out$congruent=='no'] - out$mu[out$congruent=='yes'], ptime = out$ptime[out$congruent=='no'],op=out$operand[out$congruent=='no'])
+out3 = out2 %>%
+  group_by(ptime,op) %>%
+  summarize(mu_betw=mean(dif),se=sem(dif))
 ```
 
 Now plot this summary, giving more or less the bar plot that Sklar et al. gave (though I would keep operation as a variable here. Make sure you get some error bars on there (e.g. `geom_errorbar` or `geom_linerange`). 
 
 ```{r}
+ggplot(out3,aes(ptime,mu_betw,ymin=mu_betw-se,ymax=mu_betw+se,fill=op)) +
+  geom_bar(stat="identity",position='dodge') +
+  geom_errorbar(color='black',position='dodge') +
+  xlab("Presentation Duration") +
+  ylab("Facilitation (ms)")
 ```
 
 What do you see here? How close is it to what Sklar et al. report? Do the error bars match? How do you interpret these data? 
 
+This seems reasonable, the error bars don't seem correct though. It looks like our error bars are much larger than what Sklar et al reported. If we check the results 
+
 Challenge problem: verify Sklar et al.'s claim about the relationship between RT and the objective manipulation check.
 
 ```{r}
+# no time, too busy trying to make images pre-load and get the other parts of the website working. Sorry!
 ```
 
 Your own analysis
@@ -232,10 +269,71 @@ Your own analysis
 
 Show us what you would do with these data, operating from first principles. What's the fairest plot showing a test of Sklar et al.'s original hypothesis that people can do arithmetic "non-consciously"?
 
-```{r}
-```
-
 Challenge problem: Do you find any statistical support for Sklar et al.'s findings?
 
 ```{r}
+library(effects)
 ```
+
+```{r}
+rs = out2 %>%
+  filter(op=='subtraction') %>%
+  lm(data=.,dif~ptime)
+plot(allEffects(rs))
+summary(rs)
+```
+
+According to their finding, we should find a significant effect of facilitation (e.g. significant intercept), which we do. But this effect is small and we should wonder whether there may other effects here.
+
+```{r}
+rs2 = out2 %>%
+  filter(op=='addition') %>%
+  lm(data=.,dif~ptime)
+plot(allEffects(rs2))
+summary(rs2)
+```
+
+In addition, to confuse the situation, there is no effect of facilitation for addition. Let's check whta our data really look like in the subtraction condition and consider the possibility that this is a fluke:
+
+```{r}
+sub_d = out2 %>%
+  filter(op=='subtraction')
+ggplot(sub_d,aes(ptime,dif,color=ptime,group=1)) +
+  geom_point() +
+  geom_smooth(method='lm',color='orange')
+```
+
+What if the statistics depend heavily on our selection of the subjective test and objective test criterion? If so, these data may be subject to p-hacking...
+
+```{r}
+# we'll do an analysis without these lines:
+# ds = d %>%
+#   filter(o.test<.6) %>%
+#   filter(s.test==0)
+out = d %>%
+  group_by(sid,congruent,ptime,operand) %>%
+  filter(RT>0) %>%
+  summarize(mu=mean(RT))
+# Don't know how to do this step with dplyr
+out2 = data.frame(sid=out$sid[out$congruent=='no'],dif= out$mu[out$congruent=='no'] - out$mu[out$congruent=='yes'], ptime = out$ptime[out$congruent=='no'],op=out$operand[out$congruent=='no'])
+out3 = out2 %>%
+  group_by(ptime,op) %>%
+  summarize(mu_betw=mean(dif),se=sem(dif))
+ggplot(out3,aes(ptime,mu_betw,ymin=mu_betw-se,ymax=mu_betw+se,fill=op)) +
+  geom_bar(stat="identity",position='dodge') +
+  geom_errorbar(color='black',position='dodge') +
+  xlab("Presentation Duration") +
+  ylab("Facilitation (ms)")
+```
+
+Now we see a strong 'facilitation' effect when we include all of the data, but are we worried now that the larger errorbars destroy the significance?
+
+```{r}
+rs = out2 %>%
+  filter(op=='subtraction') %>%
+  lm(data=.,dif~ptime)
+plot(allEffects(rs))
+summary(rs)
+```
+
+Indeed, there is no longer a facilitation effect in the subtraction condition when we include all of the relevant data... Without going through all of the possible analyses it seems like our manipulation checks filter the data into a form that generates our result. Understanding why this is would require discussing with the original authors, but would certainly be worth doing.

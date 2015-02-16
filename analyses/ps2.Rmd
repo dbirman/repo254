@@ -181,12 +181,19 @@ Data Analysis Preliminaries
 Examine the basic properties of the dataset. First, take a histogram.
 
 ```{r}
+ggplot(d) +
+  geom_histogram(aes(x=RT),stat='identity')
 ```
 
 Challenge question: what is the sample rate of the input device they are using to gather RTs?
 
 ```{r}
+diff_out = sort(d$RT) %>%
+  diff(.)
+diff_out = diff_out[diff_out>0];
 ```
+
+It's a little hard to be sure, but based on the fact that the sorted times tend to fall into 33 ms jumps, we can guess that the input device was recording at 30hz. 
 
 Sklar et al. did two manipulation checks. Subjective - asking participants whether they saw the primes - and objective - asking them to report the parity of the primes (even or odd) to find out if they could actually read the primes when they tried. Examine both the unconscious and conscious manipulation checks (this information is stored in subinfo). What do you see? Are they related to one another?
 

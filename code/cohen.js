@@ -146,6 +146,7 @@ function exitHandler()
 	if (watchingFull) {
 	    if (!document.webkitIsFullScreen && !document.mozFullScreen && !(document.msFullscreenElement))
 	    {
+	    	dead = true;
 	        showSlide("full-exit");
 	    }
 	}	
@@ -342,6 +343,7 @@ var flippedChar = [];
 var flippedMask = [];
 var flippedTime = [];
 var frameImg = $("#dispImg");
+var dead = false;
 
 var maskInt = 100;
 
@@ -455,10 +457,14 @@ var trial  = {
 	},
 
 	run: function() {
-		showSlide("frame")
-		$("#character").text("");
-		frameImg.attr("src","stim/Masks/start.jpg");
-		setTimeout(trial.run2,2000);
+		if (dead) {
+	        showSlide("full-exit");
+		} else {
+			showSlide("frame")
+			$("#character").text("");
+			frameImg.attr("src","stim/Masks/start.jpg");
+			setTimeout(trial.run2,2000);
+		}
 	},
 
 	run2: function() {

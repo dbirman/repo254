@@ -52,39 +52,58 @@ var imageSrcList = new Array();
 var imageList = new Array();
 
 
-function preload(images, onLoadedOne, onLoadedAll) {
-  var remainingImages = images.slice();
-  var finished = false;
+// function preload(images, onLoadedOne, onLoadedAll) {
+//   var remainingImages = images.slice();
+//   var finished = false;
 
-  // set delayInterval to 800 for testing to see that everything actually loads
-  // for real use, set to 0 
-  var loadDelayInterval = 0;
+//   // set delayInterval to 800 for testing to see that everything actually loads
+//   // for real use, set to 0 
+//   var loadDelayInterval = 0;
 
-  var worker = function() {
-    if (remainingImages.length == 0) {
-      if (!finished) {
-        finished = true;
-        setTimeout(onLoadedAll, loadDelayInterval);
-      }
-    } else {
+//   var worker = function() {
+//     if (remainingImages.length == 0) {
+//       if (!finished) {
+//         finished = true;
+//         setTimeout(onLoadedAll, loadDelayInterval);
+//       }
+//     } else {
 
-      var src = remainingImages.shift(); 
+//       var src = remainingImages.shift(); 
       
-      var image = new Image();
-      image.onload = function() {
-        onLoadedOne();
-        setTimeout(worker, loadDelayInterval);
-      };
-      image.src = src;
-      imageList.push(image);
-    }
-  };
+//       var image = new Image();
+//       image.onload = function() {
+//         onLoadedOne();
+//         setTimeout(worker, loadDelayInterval);
+//       };
+//       image.src = src;
+//       imageList.push(image);
+//     }
+//   };
 
-  // load images 6 at a time
-  var concurrent = 5;
-  for(var i = 0; i < concurrent; i++) {
-    setTimeout(worker, 20 - i);
-  };
+//   // load images 6 at a time
+//   var concurrent = 5;
+//   for(var i = 0; i < concurrent; i++) {
+//     setTimeout(worker, 20 - i);
+//   };
+// }
+
+function preload(sources, callback) {
+    if(sources.length) {
+        var preloaderDiv = $('<div style="display: none;"></div>').prependTo(document.body);
+
+        $.each(sources, function(i,source) {
+            $("<img/>").attr("src", source).appendTo(preloaderDiv);
+
+            if(i == (sources.length-1)) {
+                $(preloaderDiv).imagesLoaded(function() {
+                    $(this).remove();
+                    if(callback) callback();
+                });
+            }
+        });
+    } else {
+        callback();
+    }
 }
 
 function preloadSetup() {
@@ -228,7 +247,8 @@ if (fingerprint.screenHeight <= 700) {
 	showSlide("loading");
 	preloadSetup();
 	$("#num-total").text(imageSrcList.length);
-	preload(imageSrcList,onLoadedOne,onLoadedAll);
+	// preload(imageSrcList,onLoadedOne,onLoadedAll);
+	preload(imageSrcList,onLoadedAll);
 
 	var allData = [];
 

@@ -124,7 +124,7 @@ function buildTrialDisplay(digits,length) {
 		numbers = ['1','2','4','5'];
 
 	var display = [];
-	for (i = 0; i < length-digits; i++) {
+	for (i = 0; i < length-digits-2; i++) {
 		display[i] = randomElement(chars);
 	}
 	var used = []; // This code makes sure we never add the same digit more than once
@@ -134,7 +134,9 @@ function buildTrialDisplay(digits,length) {
 	}
 	used.push(next);
 	display[i] = randomElement(numbers);
-	return shuffleArray(display);
+	fullMinusTwo = shuffleArray(display);
+	fullMinusTwo.push(randomElement(chars)); fullMinusTwo.push(randomElement(chars));
+	return fullMinusTwo
 }
 
 $(document).on('webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange', exitHandler);
@@ -189,42 +191,51 @@ function setGeo(data) {
 
 })()
 
-var numLoadedImages = 0;
-function onLoadedOne() {
-  numLoadedImages++;
-  $("#num-loaded").text(numLoadedImages); 
+if (fingerprint.screenHeight <= 700) {
+	showSlide("screensmall");
+} else {
+	document.getElementById("character").style.fontSize = fingerprint.screenHeight + 'px';
+	$("#dispImg").width(fingerprint.screenHeight);
+	$("#dispImg").height(fingerprint.screenHeight);
+
+	var numLoadedImages = 0;
+	function onLoadedOne() {
+	  numLoadedImages++;
+	  $("#num-loaded").text(numLoadedImages); 
+	}
+
+	// define a function that will get called once
+	// all images have been successfully loaded
+	function onLoadedAll() {
+	  showSlide("instructions");
+	}
+
+	var curTrial = 0;
+	var postCatchOrder = randomElement([0,1])
+
+	var numberOfDigits = [0,1,2,3,4],
+	    trialLengths = [12,13,14,15,16,17],
+	    catchTrials = [0,1],
+	    images = ['a1','a2','a3','u1','u2','u3'],
+	    maskOpts = Array.range(1,300,1);
+
+
+	var iscatch, digits, trialLength, catchImg, trialDisplay, insts;
+
+	watchingFull = true;
+
+	showSlide("loading");
+	preloadSetup();
+	$("#num-total").text(imageSrcList.length);
+	preload(imageSrcList,onLoadedOne,onLoadedAll);
+
+	var allData = [];
+
+	allData.push({ip_info:fingerprint});
+	// allData.push({ip_info:fingerprint,workerId:turk.workerId,assignId:turk.assignmentId});
+	allData.push({digitNums:numberOfDigits,trialLengths:trialLengths,catchOpts:catchTrials,imageOpts:images,maskOpts:maskOpts});
+
 }
-
-// define a function that will get called once
-// all images have been successfully loaded
-function onLoadedAll() {
-  showSlide("instructions");
-}
-
-var curTrial = 0;
-var postCatchOrder = randomElement([0,1])
-
-var numberOfDigits = [0,1,2,3,4],
-    trialLengths = [12,13,14,15,16,17],
-    catchTrials = [0,1],
-    images = ['a1','a2','a3','u1','u2','u3'],
-    maskOpts = Array.range(1,300,1);
-
-
-var iscatch, digits, trialLength, catchImg, trialDisplay, insts;
-
-watchingFull = true;
-
-showSlide("loading");
-preloadSetup();
-$("#num-total").text(imageSrcList.length);
-preload(imageSrcList,onLoadedOne,onLoadedAll);
-
-var allData = [];
-
-allData.push({ip_info:fingerprint});
-// allData.push({ip_info:fingerprint,workerId:turk.workerId,assignId:turk.assignmentId});
-allData.push({digitNums:numberOfDigits,trialLengths:trialLengths,catchOpts:catchTrials,imageOpts:images,maskOpts:maskOpts});
 
 var experiment = {
 
@@ -447,7 +458,7 @@ var trial  = {
 		showSlide("frame")
 		$("#character").text("");
 		frameImg.attr("src","stim/Masks/start.jpg");
-		setTimeout(trial.run2,1000);
+		setTimeout(trial.run2,2000);
 	},
 
 	run2: function() {
@@ -484,6 +495,7 @@ var trial  = {
 				case 6:
 					catch6RT = now();
 					showSlide("response_catch2");
+					$(".resp-text").show();
 					break;
 			}
 		} else {

@@ -25,13 +25,15 @@
 		<p> </p>
 		<img src="stim/stanford.png" alt="Stanford University">
 		<p> </p>
-		<p class="block-text">In this experiment, you will see a rapid set of letters and numbers appear on the screen. Count each time a number appears (For example, if you see A, B, C, 1, 5, D, you would report having counted "2" numbers). At the end of each trial you will be prompted to tell us how many numbers you counted. Please read the instructions carefully on every trial--they may change throughout the experiment.
-		</p> <p>
-		You will be paid $0.60 for participating in this experiment. We expect the experiment to take no more than 10 minutes.
-		</p> <p>
-		Please note: This experiment runs in full screen. If you exit full screen mode during the experiment your data will NOT be saved! Please turn off background programs that might interfere with your browser before pressing start and do not exit full screen mode during the experiment. If your browser does not support full screen mode you MUST upgrade. You can check <a href='http://johndyer.name/lab/fullscreenapi/' target='_blank'>here</a> to see whether your browser supports full screen.
-		</p>
-
+		<p class="block-text">Thank you for your interest in our experiment!</p>
+		<p class="block-text">In this experiment, you will see a very fast display of letters and numbers appear on the screen. Count each time a number appears (For example, if you see A, B, C, 1, 5, D, you would report having counted "2" numbers). At the end of each trial you will be prompted to tell us how many numbers you counted. Please read the instructions carefully on every trial--they may change throughout the experiment. This experiment is quite difficult, please don't get frustrated! Take each trial seriously and make your best effort to answer all of the questions.
+		</p> <p class="block-text">
+		Please note: This experiment runs in full screen mode. If you exit full screen mode during the experiment your data will NOT be saved and the HIT will not be reported as completed! Please turn off background programs that might interfere with your browser BEFORE pressing start and do not exit full screen mode during the experiment. If your browser does not support full screen mode you MUST upgrade. You can check <a href='http://johndyer.name/lab/fullscreenapi/' target='_blank'>here</a> to see whether your browser supports full screen.
+		</p> <p class="block-text">
+		You will be paid $0.30 for participating in this experiment. We expect the experiment to take no more than 5 minutes.
+		</p> <p class="block-text">
+		Pressing the start button constitutes your understanding of this experiment's full instructions and requirements as well as the legal information below.
+		</p> 
 		<button type="button" onclick="this.blur(); experiment.run()">Start</button>
 
 		<p class="block-text" id="legal">Legal information: By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact Daniel Birman at <a href="mailto:dbirman@stanford.edu">dbirman@stanford.edu</a>. You must be  at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
@@ -46,7 +48,7 @@
 	</div>
 
 	<div class="slide multi-parent" id="trial_instructions">
-		<p id="inst_warning">STOP! THE INSTRUCTIONS MAY HAVE CHANGED: PLEASE READ CAREFULLY!!</p>
+		<p class="bolded" id="inst_warning">STOP! THE INSTRUCTIONS MAY HAVE CHANGED: PLEASE READ CAREFULLY!!</p>
 		<p id="inst_catch">On the next trial, pay attention to the images in the background. Ignore the letters and digits. At the end of the trial, report which natural scene image you saw in the stream of masks.</p>
 		<p id="inst">On the next trial, pay attention to the stream of letters and digits. At the end of the trial, report how many numbers you see in the stream. For example if you see A, B, 5, C, 1, you would report 2, because you saw two numbers.</p>
 		<button type="button" onclick="this.blur(); experiment.ready()">I'm Ready</button>
@@ -93,6 +95,14 @@
 		</p>
 	</div>
 
+	<div class="slide multi-parent" id="response_catchAV">
+		<button type="button rbutton" onclick="this.blur(); trial.respA()">Animal</button>
+		<button type="button rbutton" onclick="this.blur(); trial.respV()">Vehicle</button>
+		<p class="resp-text" id="6">
+			Did the scene contain an animal or a vehicle?
+		</p>
+	</div>
+
 	<div class="slide multi-parent" id="response_catch2">
 		<p class="resp-text">
 			If I were to tell you that one of these 6 images was actually presented on that trial, can you pick out which photograph was shown?
@@ -112,14 +122,11 @@
 		Please read: This experiment relies on the fact that participants do not know in advance that they will be asked about the scenes in the background. If you choose to review this HIT for others please do not relay this information! Unfortunately, you can't participate in this experiment more than once because of this. Thank you!!
 
 		If you have questions, comments, or concerns, please contact dbirman@stanford.edu.
-
-		DEBUG: PERFORMANCE:
-		First-4: <p id="score">{{}}</p>
-		Did you see critical? <p id="crit">{{}}</p>
-		Performance on Stream: <p id="stream">{{}}</p>
-		Performance on Background: <p id="backg">{{}}</p>=
 	</div>
 
+	<div class="slide multi-parent" id="screensmall">
+		We're really sorry but the stimulus in this HIT needs to be displayed on a larger screen. If you have an external display you can connect that, or run this HIT on a different computer. Thanks!
+	</div>
 	<script src="cohen.js"></script>
 
 </body>

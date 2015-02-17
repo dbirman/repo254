@@ -69,8 +69,14 @@ button[disabled] {
   margin-bottom: 1em;
 }
 
+.bolded {
+  font-weight:bold;
+  font-size:200%;
+}
+
 .resp-text {
 	width: 200px;
+	text-align:center;
 	position:absolute;
 }
 .resp-text-catch {
@@ -90,7 +96,6 @@ button[disabled] {
 
 #character {
 	color:gray;
-	font-size: 512px;
 	font-family: Arial, sans-serif;
 	margin: 0 auto;
 	text-align: center;
@@ -98,9 +103,6 @@ button[disabled] {
 	position:absolute;
 	top:50%;
 	left:50%;
-	width: 512px;
-	height: 512px;
-	margin-top: 256px;
 	z-index: 1;
 	opacity: .65;
 	transform: translate(-50%,-50%);

@@ -214,10 +214,10 @@ function setGeo(data) {
 if (fingerprint.screenHeight <= 700) {
 	showSlide("screensmall");
 } else {
-	document.getElementById("character").style.fontSize = fingerprint.screenHeight + 'px';
 	curHeight = fingerprint.screenHeight;
 	if (curHeight > 1000) {
 		curHeight = 1000;
+	document.getElementById("character").style.fontSize = curHeight + 'px';
 	}
 	$("#dispImg").width(curHeight);
 	$("#dispImg").height(curHeight);

@@ -247,7 +247,7 @@ if (fingerprint.screenHeight <= 700) {
 	    maskOpts = Array.range(1,300,1);
 
 
-	var iscatch, digits, trialLength, catchImg, trialDisplay, insts;
+	var iscatch, respcatch, digits, trialLength, catchImg, trialDisplay, insts;
 
 	watchingFull = true;
 
@@ -282,25 +282,25 @@ var experiment = {
 		// 6,7,8,9,10 -> 
 		if (curTrial < 5) {
 			// regular trial
-			iscatch = 0; insts = 0;
+			iscatch = 0; respcatch = 0; insts = 0;
 		} else if (curTrial == 5) {
-			iscatch = 1; insts = 0;
+			iscatch = 1; respcatch = 1; insts = 0;
 			// catch trial
 		} else if (curTrial < 11) {
 			if (postCatchOrder == 1) {
 				// background task first
-				iscatch = 1; insts = 1;
+				iscatch = 1; respcatch = 1; insts = 1;
 			} else {
 				// RSVP task first
-				iscatch = 0; insts = 0;
+				iscatch = 1; respcatch = 0; insts = 0;
 			}
 		} else if (curTrial < 16) {
 			if (postCatchOrder == 1) {
 				// now do the RSVP task
-				iscatch = 0; insts = 0;
+				iscatch = 1; respcatch = 0; insts = 0;
 			} else {
 				// now background task
-				iscatch = 1; insts = 1;
+				iscatch = 1; respcatch = 1; insts = 1;
 			}
 
 		} else {
@@ -500,7 +500,7 @@ var trial  = {
 	},
 
 	resp: function() {
-		if (iscatch==1) {
+		if (iscatch==1 && respcatch==1) {
 			showSlide("response_catch");
 			$(".resp-text").hide();
 			switch (respQue) {

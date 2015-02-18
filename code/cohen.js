@@ -217,8 +217,8 @@ if (fingerprint.screenHeight <= 700) {
 	curHeight = fingerprint.screenHeight;
 	if (curHeight > 1000) {
 		curHeight = 1000;
-	document.getElementById("character").style.fontSize = curHeight + 'px';
 	}
+	document.getElementById("character").style.fontSize = curHeight + 'px';
 	$("#dispImg").width(curHeight);
 	$("#dispImg").height(curHeight);
 

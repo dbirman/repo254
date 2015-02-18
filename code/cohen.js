@@ -218,12 +218,12 @@ if (fingerprint.screenHeight <= 700) {
 	if (curHeight > 1000) {
 		curHeight = 1000;
 	}
-	// document.getElementById("character").style.fontSize = curHeight + 'px';
-	// $("#dispImg").width(curHeight);
-	// $("#dispImg").height(curHeight);
-	document.getElementById("character").style.fontSize = 700 + 'px';
-	$("#dispImg").width(700);
-	$("#dispImg").height(700);
+	document.getElementById("character").style.fontSize = curHeight + 'px';
+	$("#dispImg").width(curHeight);
+	$("#dispImg").height(curHeight);
+	// document.getElementById("character").style.fontSize = 700 + 'px';
+	// $("#dispImg").width(700);
+	// $("#dispImg").height(700);
 
 	var numLoadedImages = 0;
 	function onLoadedOne() {

@@ -390,8 +390,7 @@ function drawHelper() {
 		lastMask = time;
 	}
 	flippedMask.push(imgFile);
-	filename = imgFile + "?v=" + time;
-	frameImg.attr("src",filename);
+	frameImg.attr("src",imgFile);
 	// frameImg.update();
 	// frameImg.src = imgFile;
 	frameID = window.requestAnimationFrame(drawHelper);

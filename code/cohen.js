@@ -108,7 +108,7 @@ function preload(sources, callback) {
 
 function preloadSetup() {
 	for (i = 0; i < 300; i++) {
-		imageSrcList.push("stim/Masks700/ma" + (i+1) + ".jpg");
+		imageSrcList.push("stim/Masks/ma" + (i+1) + ".jpg");
 	}
 	for (i = 0; i < 6; i++) {
 		imageSrcList.push("stim/Exp1B_Targets/" + images[i] + ".jpg");
@@ -215,10 +215,8 @@ if (fingerprint.screenHeight <= 700) {
 	showSlide("screensmall");
 } else {
 	document.getElementById("character").style.fontSize = fingerprint.screenHeight + 'px';
-	// $("#dispImg").width(fingerprint.screenHeight);
-	// $("#dispImg").height(fingerprint.screenHeight);
-	$("#dispImg").width(700);
-	$("#dispImg").height(700);
+	$("#dispImg").width(fingerprint.screenHeight);
+	$("#dispImg").height(fingerprint.screenHeight);
 
 	var numLoadedImages = 0;
 	function onLoadedOne() {
@@ -386,7 +384,7 @@ function drawHelper() {
 	if (iscatch==1 && (time-started) > (100*trialDisplay.length)-(maskInt*2) && (time-started) < (100*trialDisplay.length)-maskInt) {
 		imgFile = "stim/Exp1B_Targets/" + catchImg + ".jpg";
 	} else if ((time - lastMask) > maskInt) {
-		imgFile = "stim/Masks700/ma" + randomElement(maskOpts) + ".jpg";
+		imgFile = "stim/Masks/ma" + randomElement(maskOpts) + ".jpg";
 		lastMask = time;
 	}
 	flippedMask.push(imgFile);
@@ -483,7 +481,7 @@ var trial  = {
 		} else {
 			showSlide("frame")
 			$("#character").text("");
-			frameImg.attr("src","stim/Masks700/start.jpg");
+			frameImg.attr("src","stim/Masks/start.jpg");
 			setTimeout(trial.run2,2000);
 		}
 	},

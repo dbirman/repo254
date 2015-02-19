@@ -1,5 +1,8 @@
 if (turk.previewMode) {
-	$("#noprev").hide();
+	$("#noprev1").hide();
+	$("#noprev2").hide();
+	$("#noprev3").hide();
+	$("#noprev4").hide();
 	$("#startButton").text('Preview a Trial');
 }
 

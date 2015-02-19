@@ -480,6 +480,9 @@ var trial  = {
 		catch5RT = 0; catch6RT = 0;
 		regResp = 0;
 		catchResp1 = [];
+		flippedChar = [];
+		flippedMask = [];
+		flippedTime = [];
 		catchResp2 = '';
 	},
 

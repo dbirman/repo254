@@ -1,6 +1,6 @@
 if (turk.previewMode) {
-	$("#legal").hide();
-	$("#butt").text('Preview a Trial');
+	$("#noprev").hide();
+	$("#startButton").text('Preview a Trial');
 }
 
 function buttonClick() {

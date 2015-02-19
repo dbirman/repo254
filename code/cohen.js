@@ -360,8 +360,8 @@ var experiment = {
 	},
 
 	run: function() {
-		launchFullScreen(document)
-		addFullscreenEvents_setupNext();
+		launchFullScreen(document.documentElement)
+		experiment.addFullscreenEvents_setupNext();
 	}
 }
 

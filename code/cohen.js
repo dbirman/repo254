@@ -271,6 +271,13 @@ var experiment = {
 		watchingFull = false;
 		exitFullscreen();
 		showSlide("finished");
+		if (opener.turk.previewMode) {
+			$("#finishText").hide();
+			$("#finishTextPrev").show();
+		} else {
+			$("#finishText").show();
+			$("#finishTextPrev").hide();
+		}
 		setTimeout(function() { opener.turk.submit(allData) }, 1500);
 	},
 
@@ -332,14 +339,15 @@ var experiment = {
 	},
 
 	setupNext: function() {
-		if (curTrial > 0) {
+		if (curTrial > 2) {
 			if (opener.turk.previewMode) {
 				experiment.end();
 			} else {
 				trial.pushData();
 			}
+		} else{
+			showSlide("trial");
 		}
-		showSlide("trial");
 	},
 
 	addFullscreenEvents_setupNext: function() {

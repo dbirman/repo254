@@ -29,11 +29,11 @@
 		</p> <p class="block-text">
 		Pressing the start button constitutes your understanding of this HIT's full set of instructions. You can only press start once!
 		</p> 
-		<button id="butt" type="button" onclick="this.blur();if (!started || turk.previewMode) {started = true; window.open('cohen.html');} else {alert('Please don't do this HIT more than once! If you exited fullscreen due to an error and are trying to start over we're really sorry but we can no longer use your data.')};">Start</button>
+		<button id="startButton" type="button" onclick="buttonClick();">Start</button>
 
 		<p class="block-text" id="legal">Legal information: By answering the following questions, you are participating in a study being performed by cognitive scientists in the Stanford Department of Psychology. If you have questions about this research, please contact Daniel Birman at <a href="mailto:dbirman@stanford.edu">dbirman@stanford.edu</a>. You must be  at least 18 years old to participate. Your participation in this research is voluntary. You may decline to answer any or all of the following questions. You may decline further participation, at any time, without adverse consequences. Your anonymity is assured; the researchers who have requested your participation will not receive any personal information about you.</p>
 	</div>
 
-	<script>if (turk.previewMode) {$("#legal").hide();$("#butt").text('Preview a Trial');}</script>
+	<script src="preview.js"></script>
 </body>
 </html>

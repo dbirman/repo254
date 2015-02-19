@@ -271,7 +271,7 @@ var experiment = {
 		watchingFull = false;
 		exitFullscreen();
 		showSlide("finished");
-		setTimeout(function() { turk.submit(allData) }, 1500);
+		setTimeout(function() { opener.turk.submit(allData) }, 1500);
 	},
 
 	next: function() {
@@ -333,7 +333,7 @@ var experiment = {
 
 	setupNext: function() {
 		if (curTrial > 0) {
-			if (turk.previewMode) {
+			if (opener.turk.previewMode) {
 				experiment.end();
 			} else {
 				trial.pushData();
@@ -351,7 +351,7 @@ var experiment = {
 	},
 
 	run: function() {
-		if (turk.previewMode) {
+		if (opener.turk.previewMode) {
 			experiment.setupNext();
 		} else {
 			launchFullScreen(document.documentElement);

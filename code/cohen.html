@@ -19,7 +19,6 @@
 		<p class="block-text">
 			Images loading... please wait.
 		</p>
-		<span id="num-loaded"></span> / <span id="num-total"></span>
 	</div>
 
 	<div class="slide multi-parent" id="instructions">
@@ -50,7 +49,7 @@
 	</div>
 
 	<div class="slide multi-parent" id="response_regular">
-		<p class="block-text">Press the button corresponding to the number of the digits you saw in the stream of characters.
+		<p class="block-text" id="resp-reg">Press the button corresponding to the number of the digits you saw in the stream of characters.
 		</p>
 
 		<button type="button rbutton" onclick="this.blur(); trial.resp0()">0</button>
@@ -78,7 +77,7 @@
 			Did you see an actual photograph of a natural scene in that stream?
 		</p>
 		<p class="block-text" id="5">
-			If we told you that there was a photograph in that stream, can you tell us what it was a photograph of?
+			If we told you that there was a photograph in that stream, could you tell us what it was a photograph of?
 		</p>
 		<button type="button rbutton" onclick="this.blur(); trial.respYes()">Yes</button>
 		<button type="button rbutton" onclick="this.blur(); trial.respNo()">No</button>
@@ -86,7 +85,7 @@
 
 	<div class="slide multi-parent" id="response_catch2">
 		<p class="block-text" id="6">
-			If I were to tell you that one of these 6 images was actually presented on that trial, can you pick out which photograph was shown?
+			One of these 6 images was actually presented on that trial, can you pick out which photograph was shown? If you aren't sure, but you know whether there was an animal or vehicle present, pick an image at random among those pictures.
 		</p>
 		<img id="miniImg" onclick="trial.a1()" src="stim/Exp1B_Targets/a1.jpg">
 		<img id="miniImg" onclick="trial.a2()" src="stim/Exp1B_Targets/a2.jpg">
@@ -100,9 +99,9 @@
 	<div class="slide multi-parent" id="finished">
 		<div id="finishText">
 			<p>
-				You're finished - thanks for participating! Your data will automatically be submitted to Mechanical Turk...
+				You're finished - thanks for participating! The HIT and your data will automatically submit.
 			</p> <p>
-				Please read: This experiment relies on the fact that participants do not know in advance that they will be asked about the scenes in the background. If you choose to review this HIT for others please do not relay this information! Unfortunately, you can't participate in this experiment more than once because of this. Thank you!!
+				Please read: This experiment relies on the fact that participants do not know in advance that they will be asked about the scenes in the background. If you choose to review this HIT for others please do not relay this information! Unfortunately, you can't participate in this experiment more than once because of this. Thank you!
 			</p> <p>
 				If you have questions, comments, or concerns, please contact dbirman@stanford.edu.
 			</p>

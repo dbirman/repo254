@@ -51,42 +51,6 @@ Array.range= function(a, b, step){
 var imageSrcList = new Array();
 var imageList = new Array();
 
-
-// function preload(images, onLoadedOne, onLoadedAll) {
-//   var remainingImages = images.slice();
-//   var finished = false;
-
-//   // set delayInterval to 800 for testing to see that everything actually loads
-//   // for real use, set to 0 
-//   var loadDelayInterval = 0;
-
-//   var worker = function() {
-//     if (remainingImages.length == 0) {
-//       if (!finished) {
-//         finished = true;
-//         setTimeout(onLoadedAll, loadDelayInterval);
-//       }
-//     } else {
-
-//       var src = remainingImages.shift(); 
-      
-//       var image = new Image();
-//       image.onload = function() {
-//         onLoadedOne();
-//         setTimeout(worker, loadDelayInterval);
-//       };
-//       image.src = src;
-//       imageList.push(image);
-//     }
-//   };
-
-//   // load images 6 at a time
-//   var concurrent = 5;
-//   for(var i = 0; i < concurrent; i++) {
-//     setTimeout(worker, 20 - i);
-//   };
-// }
-
 function preload(sources, callback) {
     if(sources.length) {
         var preloaderDiv = $('<div style="display: none;"></div>').prependTo(document.body);
@@ -544,7 +508,8 @@ var trial  = {
 			}
 		} else {
 			regularRT = now();
-			showSlide("response_regular")
+			showSlide("response_regular");
+			$("#resp-reg").show();
 		}
 	},
 

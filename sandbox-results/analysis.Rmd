@@ -1,0 +1,28 @@
+---
+title: "analysis"
+author: "Dan Birman"
+date: "Thursday, February 19, 2015"
+output: html_document
+---
+
+```{r}
+library(jsonlite)
+```
+
+```{r}
+## windows code
+data = fromJSON(txt="C:\\Users\\Dan\\proj\\repo254\\sandbox-results\\3G5F9DBFOQ9HZU2KZMFGMUSGLGLVHS.json")
+# pull out the 'answer' variable
+ans = data$answer
+# get the big picture data
+id_info = ans$fingerprint
+screenInfo = data.frame(width = id_info$screenWidth,height=id_info$screenHeight,colors=id_info$colorDepth,browser=id_info$browser)
+# now get the trial data
+for (name in names(ans)) {
+  if substr(name,1,9)=="trialData" {
+  
+  }
+}
+```
+
+

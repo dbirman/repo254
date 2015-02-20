@@ -58,8 +58,11 @@ button[disabled] {
 }
 
 .bolded {
+  width:500px;
+  margin: 0 auto;
+  margin-bottom: 1em;
   font-weight:bold;
-  font-size:200%;
+  font-size:150%;
 }
 
 .multi-parent {

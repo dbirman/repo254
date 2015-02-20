@@ -1,0 +1,2 @@
+Time,Action,Data
+2015/02/19 16:31:51,Create,"{u'description': u'Can you count how many numbers appear in a quick video stream?', u'title': u'Numbers Game2', u'url': u'https://web.stanford.edu/~dbirman/repo254/code/cohenIntro.html', u'assignment_duration': u'1 hour', u'qualifications': {u'location': u'US', u'approval_percentage': 85}, u'frame_height': 440, u'keywords': u'memory, attention, numbers, video', u'auto_approval_delay': u'1 hour', u'reward': 0.6}"

@@ -24,8 +24,8 @@
 
 	<div class="slide multi-parent" id="instructions">
 		<img src="stim/stanford.png" alt="Stanford University">
-		<p>Please close background programs at this time. Pressing start will go into fullscreen mode, DO NOT exit fullscreen mode until the experiment is complete!</p>
-		<button type="button" onclick="this.blur(); experiment.run()">Start</button>
+		<p>Please close background programs at this time.</p>
+		<button type="button" onclick="this.blur(); experiment.run()">No Background Programs are Open: I'm Ready!</button>
 	</div>
 
 	<div class="slide multi-parent" id="trial">
@@ -33,13 +33,14 @@
 	</div>
 
 	<div class="slide multi-parent" id="full-exit">
-		<p>We're really sorry but you are required to run this experiment in full screen mode. Please re-read the instructions page if you aren't sure about the HIT requirements. If you feel like this occurred due to an error or a bug please contact Daniel Birman at dbirman@stanford.edu.</p>
+		<p class='block-text'>We're really sorry but you are required to run this experiment in full screen mode.</p>
+		<button type="button" onclick="this.blur(); experiment.runFromDead()">Return to full screen</button>
 	</div>
 
 	<div class="slide multi-parent" id="trial_instructions">
 		<p class="bolded" id="inst_warning">STOP! THE INSTRUCTIONS MAY HAVE CHANGED: PLEASE READ CAREFULLY!!</p>
-		<p id="inst_catch">On the next trial, pay attention to the images in the background. Ignore the letters and digits. At the end of the trial, report which natural scene image you saw in the stream of masks.</p>
-		<p id="inst">On the next trial, pay attention to the stream of letters and digits. At the end of the trial, report how many numbers you see in the stream. For example if you see A, B, 5, C, 1, you would report 2, because you saw two numbers.</p>
+		<p class='block-text' id="inst_catch">On the next trial, pay attention to the images in the background. Ignore the letters and digits. At the end of the trial, report which natural scene image you saw in the stream of masks.</p>
+		<p class="block-text" id="inst">On the next trial, pay attention to the stream of letters and digits. At the end of the trial, report how many numbers you see in the stream. For example if you see A, B, 5, C, 1, you would report 2, because you saw two numbers.</p>
 		<button type="button" onclick="this.blur(); experiment.ready()">I'm Ready</button>
 	</div>
 
@@ -64,36 +65,27 @@
 	</div>
 
 	<div class="slide multi-parent" id="response_catch">
-		<button type="button rbutton" onclick="this.blur(); trial.respYes()">Yes</button>
-		<button type="button rbutton" onclick="this.blur(); trial.respNo()">No</button>
-
-		<p class="resp-text" id="1">
+		<p class="block-text" id="1">
 			Did you notice anything different on that trial?
 		</p>
-		<p class="resp-text" id="2">
+		<p class="block-text" id="2">
 			Did you notice something different about the background stream of images?
 		</p>
-		<p class="resp-text" id="3">
+		<p class="block-text" id="3">
 			Did you notice that a different type of image was presented in the background that was unique in some particular way?
 		</p>
-		<p class="resp-text" id="4">
+		<p class="block-text" id="4">
 			Did you see an actual photograph of a natural scene in that stream?
 		</p>
-		<p class="resp-text" id="5">
+		<p class="block-text" id="5">
 			If we told you that there was a photograph in that stream, can you tell us what it was a photograph of?
 		</p>
-	</div>
-
-	<div class="slide multi-parent" id="response_catchAV">
-		<button type="button rbutton" onclick="this.blur(); trial.respA()">Animal</button>
-		<button type="button rbutton" onclick="this.blur(); trial.respV()">Vehicle</button>
-		<p class="resp-text" id="6">
-			Did the scene contain an animal or a vehicle?
-		</p>
+		<button type="button rbutton" onclick="this.blur(); trial.respYes()">Yes</button>
+		<button type="button rbutton" onclick="this.blur(); trial.respNo()">No</button>
 	</div>
 
 	<div class="slide multi-parent" id="response_catch2">
-		<p class="resp-text">
+		<p class="block-text">
 			If I were to tell you that one of these 6 images was actually presented on that trial, can you pick out which photograph was shown?
 		</p>
 		<img id="miniImg" onclick="trial.a1()" src="stim/Exp1B_Targets/a1.jpg">

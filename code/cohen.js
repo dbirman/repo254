@@ -166,6 +166,7 @@ function exitHandler()
 	    if (!document.webkitIsFullScreen && !document.mozFullScreen && !(document.msFullscreenElement))
 	    {
 	    	dead = true;
+  			if (curTrial > 0) {trial.pushData(true);}
 	        showSlide("full-exit");
 	    }
 	}	
@@ -257,11 +258,14 @@ if (fingerprint.screenHeight <= 700) {
 	// preload(imageSrcList,onLoadedOne,onLoadedAll);
 	preload(imageSrcList,onLoadedAll);
 
-	var allData = [];
+	var allData = {};
 
-	allData.push({ip_info:fingerprint});
-	// allData.push({ip_info:fingerprint,workerId:turk.workerId,assignId:turk.assignmentId});
-	allData.push({digitNums:numberOfDigits,trialLengths:trialLengths,catchOpts:catchTrials,imageOpts:images,maskOpts:maskOpts});
+	allData.fingerprint = fingerprint;
+	allData.numDigits = numberOfDigits;
+	allData.trialLens = trialLengths;
+	allData.catchOpts = catchTrials;
+	allData.imageOpts = images;
+	allData.maskOpts = maskOpts;
 
 }
 
@@ -339,15 +343,19 @@ var experiment = {
 	},
 
 	setupNext: function() {
-		if (curTrial > 0) {
-			if (curTrial > 2 && opener.turk.previewMode) {
-				experiment.end();
-			} else {
-				trial.pushData();
+		if (!dead) {
+			if (curTrial > 0) {
+				if (curTrial > 2 && opener.turk.previewMode) {
+					experiment.end();
+				} else {
+					trial.pushData(false);
+					showSlide("trial");
+				}
+			} else{
 				showSlide("trial");
 			}
-		} else{
-			showSlide("trial");
+		} else {
+			showSlide("full-exit");
 		}
 	},
 
@@ -360,6 +368,13 @@ var experiment = {
 	},
 
 	run: function() {
+		launchFullScreen(document.documentElement)
+		experiment.addFullscreenEvents_setupNext();
+	},
+
+	runFromDead: function() {
+		if (curTrial > 0) {curTrial = curTrial - 1;}
+		dead = false;
 		launchFullScreen(document.documentElement)
 		experiment.addFullscreenEvents_setupNext();
 	}
@@ -423,7 +438,7 @@ var trial  = {
 	// digits = list of digits to display on masks
 	// iscatch = whether or not to display a random image
 
-	pushData: function() {
+	pushData: function(leftFull) {
 		var trialData = {};
 		if (iscatch==1) {
 			trialData['regRT'] = NaN;
@@ -467,8 +482,9 @@ var trial  = {
 		trialData['flipTime'] = flippedTime; // LIST
 		trialData['flipChar'] = flippedChar; // LIST
 		trialData['flipMask'] = flippedMask; // LIST
+		trialData.leftFull = leftFull;
 		//Add to experiment.data
-		allData.push(trialData);
+		allData['trialData' + curTrial + '_' + now()] = trialData;
 		// Now we reset all the variables
 		if (curTrial > 4) {
 			respQue = 4;

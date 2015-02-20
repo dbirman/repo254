@@ -443,8 +443,6 @@ var trial  = {
 	pushData: function(leftFull) {
 		var trialData = {};
 		if (iscatch==1) {
-			trialData['regRT'] = NaN;
-			trialData['regresp'] = NaN;
 			trialData['catchResp1'] = catchResp1[0];
 			trialData['catchResp2'] = catchResp1[1];
 			trialData['catchResp3'] = catchResp1[2];
@@ -460,18 +458,6 @@ var trial  = {
 		} else {
 			trialData['regRT'] = regularRT;
 			trialData['regResp'] = regResp;
-			trialData['catchResp1'] = NaN;
-			trialData['catchResp2'] = NaN;
-			trialData['catchResp3'] = NaN;
-			trialData['catchResp4'] = NaN;
-			trialData['catchResp5'] = NaN;
-			trialData['catchImageResp'] = NaN;
-			trialData['catchRT1'] = NaN;
-			trialData['catchRT2'] = NaN;
-			trialData['catchRT3'] = NaN;
-			trialData['catchRT4'] = NaN
-			trialData['catchRT5'] = NaN;
-			trialData['catchRT6'] = NaN;
 		}
 		// Always add thesee
 		trialData['catchTrial'] = iscatch;

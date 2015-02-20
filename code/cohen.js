@@ -147,12 +147,14 @@ function buildTrialDisplay(digits,length) {
 		display[i] = randomElement(chars);
 	}
 	var used = []; // This code makes sure we never add the same digit more than once
-	next = randomElement(numbers);
-	while (used.indexOf(next) > -1) {
+	for (;i < length-2;i++) {
 		next = randomElement(numbers);
+		while (used.indexOf(next) > -1) {
+			next = randomElement(numbers);
+		}
+		used.push(next);
+		display.push(next);
 	}
-	used.push(next);
-	display[i] = randomElement(numbers);
 	fullMinusTwo = shuffleArray(display);
 	fullMinusTwo.push(randomElement(chars)); fullMinusTwo.push(randomElement(chars));
 	return fullMinusTwo

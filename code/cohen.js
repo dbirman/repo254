@@ -526,7 +526,7 @@ var trial  = {
 	resp: function() {
 		if (iscatch==1 && respcatch==1) {
 			showSlide("response_catch");
-			$(".resp-text").hide();
+			$(".block-text").hide();
 			switch (respQue) {
 				case 1:
 					catch1RT = now();
@@ -551,7 +551,7 @@ var trial  = {
 				case 6:
 					catch6RT = now();
 					showSlide("response_catch2");
-					$(".resp-text").show();
+					$("#6").show();
 					break;
 			}
 		} else {
@@ -562,12 +562,16 @@ var trial  = {
 
 	respYes: function() {
 		trial.eitherResp();
+		respQue = 6;
 		catchResp1.push("Y")
+		trial.resp();
 	},
 
 	respNo: function() {
 		trial.eitherResp();
 		catchResp1.push("N")
+		respQue = respQue +1;
+		trial.resp();
 	},
 
 	eitherResp: function() {
@@ -583,8 +587,6 @@ var trial  = {
 			case 5:
 				catch5RT = now() - catch5RT;
 		}
-		respQue = respQue +1;
-		trial.resp();
 	},
 
 	a1: function() {

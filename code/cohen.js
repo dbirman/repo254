@@ -416,7 +416,7 @@ var trial  = {
 		allData.leftfull.push(leftFull);
 		//Trial info
 		var trialData = {};
-		if (iscatch==1) {
+		if (respcatch==1) {
 			trialData['catchResp1'] = catchResp1[0];
 			trialData['catchResp2'] = catchResp1[1];
 			trialData['catchResp3'] = catchResp1[2];
@@ -438,6 +438,7 @@ var trial  = {
 		} else if (curTrial == 5) {
 			allData.t_critical.push(trialData);
 		} else if (respcatch == 1) {
+			// trial > 5 and respcatch==1
 			allData.t_backg.push(trialData);
 		} else {
 			allData.t_stream.push(trialData);

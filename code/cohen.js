@@ -227,11 +227,19 @@ if (fingerprint.screenHeight <= 700) {
 	var allData = {};
 
 	allData.fingerprint = fingerprint;
-	allData.numDigits = numberOfDigits;
-	allData.trialLens = trialLengths;
-	allData.catchOpts = catchTrials;
-	allData.imageOpts = images;
-	allData.maskOpts = maskOpts;
+	allData.znumDigits = numberOfDigits;
+	allData.ztrialLens = trialLengths;
+	allData.zcatchOpts = catchTrials;
+	allData.zimageOpts = images;
+	allData.zmaskOpts = maskOpts;
+	allData.t_train = [];
+	allData.t_critical = [];
+	allData.t_backg = [];
+	allData.t_stream = [];
+	allData.flipData = [];
+	allData.leftfull = [];
+	allData.trialInfo = [];
+	allData.charstream = [];
 
 }
 
@@ -360,6 +368,7 @@ var dead = false;
 
 var maskInt = 100;
 
+
 function drawHelper() {
 	time = now();
 	flippedTime.push(time-started)
@@ -399,12 +408,13 @@ var regResp;
 var catchResp1 = [];
 var catchResp2;
 
-
 var trial  = {
 	// digits = list of digits to display on masks
 	// iscatch = whether or not to display a random image
 
 	pushData: function(leftFull) {
+		allData.leftfull.push(leftFull);
+		//Trial info
 		var trialData = {};
 		if (iscatch==1) {
 			trialData['catchResp1'] = catchResp1[0];
@@ -423,20 +433,34 @@ var trial  = {
 			trialData['regRT'] = regularRT;
 			trialData['regResp'] = regResp;
 		}
+		if (curTrial < 5) {
+			allData.t_train.push(trialData);
+		} else if (curTrial == 5) {
+			allData.t_critical.push(trialData);
+		} else if (respcatch == 1) {
+			allData.t_backg.push(trialData);
+		} else {
+			allData.t_stream.push(trialData);
+		}
 		// Always add thesee
-		trialData['catchTrial'] = iscatch;
-		trialData['charStream'] = trialDisplay; //WARNING: THIS IS A LIST
-		trialData['catchImage'] = catchImg;
-		trialData['digits'] = digits;
-		trialData['streamLength'] = trialLength;
-		trialData['trialNum'] = curTrial;
+		var trialInfo = {};
+		trialInfo['catchTrial'] = iscatch;
+		trialInfo['catchImage'] = catchImg;
+		trialInfo['digits'] = digits;
+		trialInfo['streamLength'] = trialLength;
+		trialInfo['trialNum'] = curTrial;
+		allData.trialInfo.push(trialInfo);
+		// Character stream
+		var charStream = {};
+		charStream.stream = trialDisplay;
+		allData.charstream.push(charStream);
 		// Flip data
-		trialData['flipTime'] = flippedTime; // LIST
-		trialData['flipChar'] = flippedChar; // LIST
-		trialData['flipMask'] = flippedMask; // LIST
-		trialData.leftFull = leftFull;
-		//Add to experiment.data
-		allData['trialData' + curTrial + '_' + now()] = trialData;
+		var flipData = {};
+		flipData['flipTime'] = flippedTime; // LIST
+		flipData['flipChar'] = flippedChar; // LIST
+		flipData['flipMask'] = flippedMask; // LIST
+		allData.flipData.push(flipData);
+
 		// Now we reset all the variables
 		if (curTrial > 4) {
 			respQue = 4;

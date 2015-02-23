@@ -11,19 +11,37 @@ library(jsonlite)
 
 ```{r}
 ## windows code
-# data = fromJSON(txt="C:\\Users\\Dan\\proj\\repo254\\sandbox-results\\3G5F9DBFOQ9HZU2KZMFGMUSGLGLVHS.json")
-data = fromJSON(txt="sandbox-results/3M23Y66PO3JLAD1Z98J7EGJJDYHS6P.json")
+data = fromJSON(txt="C:\\Users\\Dan\\proj\\repo254\\sandbox-results\\3M23Y66PO3JLAD1Z98J7EGJJDYHS6P.json")
+# data = fromJSON(txt="sandbox-results/3M23Y66PO3JLAD1Z98J7EGJJDYHS6P.json")
 # pull out the 'answer' variable
 ans = data$answer
 # get the big picture data
-id_info = ans$fingerprint
+fingerprint = ans$fingerprint
 screenInfo = data.frame(width = id_info$screenWidth,height=id_info$screenHeight,colors=id_info$colorDepth,browser=id_info$browser)
 # now get the trial data
-for (name in names(ans)) {
-  if substr(name,1,9)=="trialData" {
-  
-  }
-}
+training = ans$t_train
+critical = ans$t_critical
+backg = ans$t_backg
+stream = ans$t_stream
+trials = ans$trialInfo
+trials$backgtask = c(0,0,0,0,1,1,1,1,1,1,0,0,0,0,0) # only needed for dan's data, caus ehe f'ed up 
 ```
+
+Parse data to group performance
+```{r}
+trials$correct[1:15] = 0
+trials$correct[1:4] = training$regResp == trials$digits[1:4]
+trials$correct[11:15] = stream$regResp == trials$digits[11:15]
+trials$correct[5] = critical$catchImageResp == trials$catchImage[5]
+trials$correct[6:10] = backg$catchImageResp == trials$catchImage[6:10]
+```
+
+```{r}
+train_perf = mean(trials$correct[1:4])
+crit_perf = trials$correct[5]
+backg_perf = mean(trials$correct[6:10])
+stream_perf = mean(trials$correct[11:15])
+```
+
 
 

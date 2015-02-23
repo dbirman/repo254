@@ -237,7 +237,6 @@ if (fingerprint.screenHeight <= 700) {
 	allData.t_backg = [];
 	allData.t_stream = [];
 	allData.flipData = [];
-	allData.leftfull = [];
 	allData.trialInfo = [];
 	allData.charstream = [];
 
@@ -424,7 +423,6 @@ var trial  = {
 	// iscatch = whether or not to display a random image
 
 	pushData: function(leftFull) {
-		allData.leftfull.push(leftFull);
 		//Trial info
 		var trialData = {};
 		if (respcatch==1) {
@@ -463,6 +461,7 @@ var trial  = {
 		trialInfo['digits'] = digits;
 		trialInfo['streamLength'] = trialLength;
 		trialInfo['trialNum'] = curTrial;
+		trialInfo['leftFull'] = leftFull;
 		allData.trialInfo.push(trialInfo);
 		// Character stream
 		var charStream = {};

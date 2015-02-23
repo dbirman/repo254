@@ -42,6 +42,3 @@ crit_perf = trials$correct[5]
 backg_perf = mean(trials$correct[6:10])
 stream_perf = mean(trials$correct[11:15])
 ```
-
-
-

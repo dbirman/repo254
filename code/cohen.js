@@ -446,6 +446,7 @@ var trial  = {
 		// Always add thesee
 		var trialInfo = {};
 		trialInfo['catchTrial'] = iscatch;
+		trialInfo['backgtask'] = respcatch;
 		trialInfo['catchImage'] = catchImg;
 		trialInfo['digits'] = digits;
 		trialInfo['streamLength'] = trialLength;

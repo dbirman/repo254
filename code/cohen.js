@@ -444,6 +444,7 @@ var trial  = {
 			trialData['regRT'] = regularRT;
 			trialData['regResp'] = regResp;
 		}
+		trialData['trialNum'] = curTrial;
 		if (curTrial < 5) {
 			allData.t_train.push(trialData);
 		} else if (curTrial == 5) {

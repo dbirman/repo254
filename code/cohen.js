@@ -201,7 +201,7 @@ if (fingerprint.screenHeight <= 700) {
 	// define a function that will get called once
 	// all images have been successfully loaded
 	function onLoadedAll() {
-	  showSlide("instructions");
+	  showSlide("pre-instructions");
 	}
 
 	var curTrial = 0;
@@ -339,6 +339,17 @@ var experiment = {
 	    document.addEventListener('fullscreenchange', exitHandler, false);
 	    document.addEventListener('MSFullscreenChange', exitHandler, false);
 	    experiment.setupNext();
+	},
+
+	prerun: function() {
+		if (document.getElementById('agebox').value=="" || document.getElementById('sexbox').value=="") {
+			alert("Please enter your age and sex. These demographic information are important for our study.");
+			return
+		}
+		allData.demo = {};
+		allData.demo.age = document.getElementById('agebox').value;
+		allData.demo.sex = document.getElementById('sexbox').value;
+		showSlide("instructions");
 	},
 
 	run: function() {

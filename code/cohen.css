@@ -46,26 +46,39 @@ button[disabled] {
   font-weight: bold;
 }
 
-.block-text {
-  width: 300px;
-  margin: 0 auto;
-  margin-bottom: 1em;
+.centerbox {
+	width:500px;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-right:-50%;
+  transform: translate(-50%,-50%);
 }
+
+.centerbox {
+	width:750px;
+  position:absolute;
+  top:50%;
+  left:50%;
+  margin-right:-50%;
+  transform: translate(-50%,-50%);
+}
+
+/* This is the cohenIntro text CSS, DO NOT CHANGE!! */
 .frontblock-text {
-  width: 500px;
   margin: 0 auto;
   margin-bottom: 1em;
 }
 
+/* This is for the change of instructions trials */
 .bolded {
   width:500px;
-  margin: 0 auto;
-  margin-bottom: 1em;
   font-weight:bold;
   font-size:150%;
 }
 
 .multi-parent {
+	position:relative;
 	text-align:center;
 }
 

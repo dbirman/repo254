@@ -16,101 +16,121 @@
 <body>
 
 	<div class="slide multi-parent" id="loading">
-		<p class="block-text">
-			Images loading... please wait.
-		</p>
+		<div class="centerbox">
+			<p class="block-text">
+				Images loading... please wait.
+			</p>
+		</div>
 	</div>
 
 	<div class="slide multi-parent" id="pre-instructions">
-		<img src="stim/stanford.png" alt="Stanford University">
-		<p>Please answer the following questions. Your responses and all data are anonymous and cannot be used to identify you:</p>
-	   	Age: <input type=number id="agebox"><br>
-   	   	Sex: <input type=text id="sexbox"><br>
-		<button type="button" onclick="this.blur(); experiment.prerun()">Continue</button>
+		<div class="centerbox">
+			<img src="stim/stanford.png" alt="Stanford University">
+			<p>Please answer the following questions:</p>
+			Age: <input type=number id="agebox"><br>
+			Sex: <input type=text id="sexbox"><br>
+			<p>(All responses and data are anonymous)</p>
+			<button type="button" onclick="this.blur(); experiment.prerun()">Continue</button>
+		</div>
 	</div>
 
 	<div class="slide multi-parent" id="instructions">
-		<img src="stim/stanford.png" alt="Stanford University">
-		<p>Please close background programs at this time.</p>
-		<button type="button" onclick="this.blur(); experiment.run()">No Background Programs are Open: I'm Ready!</button>
-	</div>
+		<div class="centerbox">
+			<img src="stim/stanford.png" alt="Stanford University">
+			<p>Please close background programs at this time.</p>
+			<button type="button" onclick="this.blur(); experiment.run()">No Background Programs are Open: I'm Ready!</button>	</div>
 
-	<div class="slide multi-parent" id="trial">
-		<button type="button" onclick="this.blur(); experiment.next()">Press for Next Trial</button>
-	</div>
+		</div>
 
-	<div class="slide multi-parent" id="full-exit">
-		<p class='block-text'>We're really sorry but you are required to run this experiment in full screen mode.</p>
-		<button type="button" onclick="this.blur(); experiment.runFromDead()">Return to full screen</button>
-	</div>
+		<div class="slide multi-parent" id="trial">
+			<div class="centerbox">
+				<button type="button" onclick="this.blur(); experiment.next()">Press for Next Trial</button>
+			</div>
 
-	<div class="slide multi-parent" id="trial_instructions">
-		<p class="bolded" id="inst_warning">STOP! THE INSTRUCTIONS MAY HAVE CHANGED: PLEASE READ CAREFULLY!!</p>
-		<p class='block-text' id="inst_catch">On the next trial, pay attention to the images in the background. Ignore the letters and digits. At the end of the trial, report which natural scene image you saw in the sequence of masks.</p>
-		<p class="block-text" id="inst">On the next trial, pay attention to the sequence of letters and digits. At the end of the trial, report how many numbers you see in the sequence. For example if you see A, B, 5, C, 1, you would report 2, because you saw two numbers.</p>
-		<button type="button" onclick="this.blur(); experiment.ready()">I'm Ready</button>
-	</div>
+		</div>
 
-	<div class="slide" id="frame">
-		<p id="character">{{}}</p>
-		<img id="dispImg" src={{}}>
-	</div>
+		<div class="slide multi-parent" id="full-exit">
+			<div class="centerbox">
+				<p class='block-text'>We're really sorry but you are required to run this experiment in full screen mode.</p>
+				<button type="button" onclick="this.blur(); experiment.runFromDead()">Return to full screen</button>
+			</div>
 
-	<div class="slide multi-parent" id="response_regular">
-		<p class="block-text" id="resp-reg">Press the button corresponding to the number of the digits you saw in the sequence of characters.
-		</p>
+		</div>
 
-		<button type="button rbutton" onclick="this.blur(); trial.resp0()">0</button>
+		<div class="slide multi-parent" id="trial_instructions">
+			<div class="centerbox">
+				<p class="bolded" id="inst_warning">STOP! THE INSTRUCTIONS MAY HAVE CHANGED: PLEASE READ CAREFULLY!!</p>
+				<p class='block-text' id="inst_catch">On the next trial, pay attention to the images in the background. Ignore the letters and digits. At the end of the trial, report which natural scene image you saw in the sequence of masks.</p>
+				<p class="block-text" id="inst">On the next trial, pay attention to the sequence of letters and digits. At the end of the trial, report how many numbers you see in the sequence. For example if you see A, B, 5, C, 1, you would report 2, because you saw two numbers.</p>
+				<button type="button" onclick="this.blur(); experiment.ready()">I'm Ready</button>
+			</div>
 
-		<button type="button rbutton" onclick="this.blur(); trial.resp1()">1</button>
+		</div>
 
-		<button type="button rbutton" onclick="this.blur(); trial.resp2()">2</button>
+		<div class="slide" id="frame">
+			<p id="character">{{}}</p>
+			<img id="dispImg" src={{}}>
+		</div>
 
-		<button type="button rbutton" onclick="this.blur(); trial.resp3()">3</button>
+		<div class="slide multi-parent" id="response_regular">
+			<div class="centerbox">
+				<p class="block-text" id="resp-reg">Press the button corresponding to the number of digits you saw in the sequence of characters.</p><br>
+				<button type="button rbutton" onclick="this.blur(); trial.resp0()">0</button>
+				<button type="button rbutton" onclick="this.blur(); trial.resp1()">1</button>
+				<button type="button rbutton" onclick="this.blur(); trial.resp2()">2</button>
+				<button type="button rbutton" onclick="this.blur(); trial.resp3()">3</button>
+				<button type="button rbutton" onclick="this.blur(); trial.resp4()">4</button>
+			</div>
 
-		<button type="button rbutton" onclick="this.blur(); trial.resp4()">4</button>
-	</div>
+		</div>
 
-	<div class="slide multi-parent" id="response_catch">
-		<p class="block-text" id="1">
-			Did you notice anything different on that trial?
-		</p>
-		<p class="block-text" id="2">
-			Did you notice something different about the background sequence of images?
-		</p>
-		<p class="block-text" id="3">
-			Did you notice that a different type of image was presented in the background that was unique in some particular way?
-		</p>
-		<p class="block-text" id="4">
-			Did you see an actual photograph of a scene in that sequence?
-		</p>
-		<p class="block-text" id="5">
-			If we told you that there was a photograph in that sequence, could you tell us what it was a photograph of?
-		</p>
-		<button type="button rbutton" onclick="this.blur(); trial.respYes()">Yes</button>
-		<button type="button rbutton" onclick="this.blur(); trial.respNo()">No</button>
-	</div>
+		<div class="slide multi-parent" id="response_catch">
+			<div class="centerbox">
+				<p class="block-text" id="1">
+					Did you notice anything different on that trial?
+				</p>
+				<p class="block-text" id="2">
+					Did you notice something different about the background sequence of images?
+				</p>
+				<p class="block-text" id="3">
+					Did you notice that a different type of image was presented in the background that was unique in some particular way?
+				</p>
+				<p class="block-text" id="4">
+					Did you see an actual photograph of a scene in that sequence?
+				</p>
+				<p class="block-text" id="5">
+					If we told you that there was a photograph in that sequence, could you tell us what it was a photograph of?
+				</p>
+				<button type="button rbutton" onclick="this.blur(); trial.respYes()">Yes</button>
+				<button type="button rbutton" onclick="this.blur(); trial.respNo()">No</button>
+			</div>
 
-	<div class="slide multi-parent" id="response_catch2">
-		<p class="block-text" id="6">
-			One of these 6 images was actually presented on that trial, can you pick out which photograph was shown? If you aren't sure, but you know whether there was an animal or vehicle present, pick an image at random among those pictures.
-		</p>
-		<img id="miniImg" onclick="trial.a1()" src="stim/Exp1B_Targets/a1.jpg">
-		<img id="miniImg" onclick="trial.a2()" src="stim/Exp1B_Targets/a2.jpg">
-		<img id="miniImg" onclick="trial.a3()" src="stim/Exp1B_Targets/a3.jpg">
-		<p></p>
-		<img id="miniImg" onclick="trial.u1()" src="stim/Exp1B_Targets/u1.jpg">
-		<img id="miniImg" onclick="trial.u2()" src="stim/Exp1B_Targets/u2.jpg">
-		<img id="miniImg" onclick="trial.u3()" src="stim/Exp1B_Targets/u3.jpg">
-	</div>
+		</div>
 
-	<div class="slide multi-parent" id="finished">
-		<div id="finishText">
-			<p>
-				You're finished - thanks for participating! This HIT does not require a completion code, the MTurk webpage will automatically submit.
-			</p> <p>
-				Please read: This experiment relies on the fact that participants do not know in advance that they will be asked about the scenes in the background. If you choose to review this HIT for others please do not relay this information! Unfortunately, you can't participate in this experiment more than once because of this. Thank you!
-			</p> <p>
+		<div class="slide multi-parent" id="response_catch2">
+			<div class="bigcenterbox">
+				<p class="block-text" id="6">
+					One of these 6 images was actually presented on that trial, can you pick out which photograph was shown? If you aren't sure, but you know whether there was an animal or vehicle present, pick an image at random among those pictures.
+				</p>
+				<img id="miniImg" onclick="trial.a1()" src="stim/Exp1B_Targets/a1.jpg">
+				<img id="miniImg" onclick="trial.a2()" src="stim/Exp1B_Targets/a2.jpg">
+				<img id="miniImg" onclick="trial.a3()" src="stim/Exp1B_Targets/a3.jpg">
+				<p></p>
+				<img id="miniImg" onclick="trial.u1()" src="stim/Exp1B_Targets/u1.jpg">
+				<img id="miniImg" onclick="trial.u2()" src="stim/Exp1B_Targets/u2.jpg">
+				<img id="miniImg" onclick="trial.u3()" src="stim/Exp1B_Targets/u3.jpg">
+			</div>
+
+		</div>
+
+		<div class="slide multi-parent" id="finished">
+			<div class="centerbox">
+				<div id="finishText">
+					<p>
+						Thanks for participating! This HIT does not require a completion code, everything was submitted automatically.
+					</p> <p>
+					This experiment relies on the fact that participants do not know in advance that they will be asked about the scenes in the background. If you choose to review this HIT for others please do not relay this information! Thank you!
+				</p> <p>
 				If you have questions, comments, or concerns, please contact dbirman@stanford.edu.
 			</p>
 		</div>
@@ -118,13 +138,17 @@
 			<p>
 				Thanks for previewing the experiment! Please accept the HIT to complete the full experiment.
 			</p>
-		</div>
+		</div>	
 	</div>
 
-	<div class="slide multi-parent block-text" id="screensmall">
+</div>
+
+<div class="slide multi-parent block-text" id="screensmall">
+	<div class="centerbox">
 		We're really sorry but the stimulus in this HIT needs to be displayed on a larger screen. If you have an external display you can connect that, or run this HIT on a different computer. Thanks!
 	</div>
-	<script src="cohen.js"></script>
+</div>
+<script src="cohen.js"></script>
 
 </body>
 </html>

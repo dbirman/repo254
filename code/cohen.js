@@ -49,7 +49,6 @@ Array.range= function(a, b, step){
 }
 
 var imageSrcList = new Array();
-var imageList = new Array();
 
 function preload(sources, callback) {
     if(sources.length) {
@@ -57,7 +56,6 @@ function preload(sources, callback) {
 
         $.each(sources, function(i,source) {
             $("<img/>").attr("src", source).appendTo(preloaderDiv);
-
             if(i == (sources.length-1)) {
                 $(preloaderDiv).imagesLoaded(function() {
                     $(this).remove();
@@ -131,6 +129,7 @@ function exitHandler()
 	if (watchingFull) {
 	    if (!document.webkitIsFullScreen && !document.mozFullScreen && !(document.msFullscreenElement))
 	    {
+  			$(document.body).css("cursor","auto")
 	    	dead = true;
   			if (curTrial > 0) {trial.pushData(true);}
 	        showSlide("full-exit");
@@ -504,7 +503,8 @@ var trial  = {
 	        showSlide("full-exit");
 		} else {
 			showSlide("frame")
-			$("#character").text("");
+			$("#character").text("");		
+			$(document.body).css("cursor","none")
 			frameImg.attr("src","stim/Masks700/start.jpg");
 			setTimeout(trial.run2,2000);
 		}
@@ -517,6 +517,7 @@ var trial  = {
 	},
 
 	resp: function() {
+		$(document.body).css("cursor","auto")
 		if (iscatch==1 && respcatch==1) {
 			showSlide("response_catch");
 			$(".block-text").hide();

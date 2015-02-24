@@ -66,6 +66,8 @@ button[disabled] {
 
 /* This is the cohenIntro text CSS, DO NOT CHANGE!! */
 .frontblock-text {
+  width:650;
+  text-align:justify;
   margin: 0 auto;
   margin-bottom: 1em;
 }

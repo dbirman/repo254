@@ -3,7 +3,7 @@
     "description":         "Can you count how many numbers appear in a quick video stream?",
     "keywords":            "memory, attention, numbers, video",
     "url":                 "https://web.stanford.edu/~dbirman/repo254/code/cohenIntro.html",
-    "frame_height":         800,
+    "frame_height":         900,
     "assignment_duration":  "1 hour",
     "auto_approval_delay":  "1 hour",
     "reward":               0.40,

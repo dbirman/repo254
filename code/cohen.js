@@ -214,7 +214,7 @@ if (fingerprint.screenHeight <= 700) {
 	    maskOpts = Array.range(1,300,1);
 
 
-	var iscatch, respcatch, digits, trialLength, catchImg, trialDisplay, insts;
+	var iscatch, respcatch, digits, trialLength, catchImg, trialDisplay, insts, prevImg;
 
 	watchingFull = true;
 
@@ -295,6 +295,10 @@ var experiment = {
 		digits = randomElement(numberOfDigits);
 		trialLength = randomElement(trialLengths);
 		catchImg = randomElement(images);
+		while (curTrial > 0 && catchImg == prevImg) {
+			catchImg = randomElement(images);
+		}
+		prevImg = catchImg;
 		trialDisplay = buildTrialDisplay(digits,trialLength);
 		showSlide("trial_instructions")
 		if (insts==1) {

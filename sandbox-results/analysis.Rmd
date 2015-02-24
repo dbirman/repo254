@@ -11,8 +11,8 @@ library(jsonlite)
 
 ```{r}
 ## windows code
-data = fromJSON(txt="C:\\Users\\Dan\\proj\\repo254\\sandbox-results\\3M23Y66PO3JLAD1Z98J7EGJJDYHS6P.json")
-# data = fromJSON(txt="sandbox-results/3M23Y66PO3JLAD1Z98J7EGJJDYHS6P.json")
+# data = fromJSON(txt="C:\\Users\\Dan\\proj\\repo254\\sandbox-results\\3M23Y66PO3JLAD1Z98J7EGJJDYHS6P.json")
+data = fromJSON(txt="sandbox-results/34FNN24DCNLMNVDU3V1R4WTKYOA5Y8.json")
 # pull out the 'answer' variable
 ans = data$answer
 # get the big picture data
@@ -24,21 +24,27 @@ critical = ans$t_critical
 backg = ans$t_backg
 stream = ans$t_stream
 trials = ans$trialInfo
-trials$backgtask = c(0,0,0,0,1,1,1,1,1,1,0,0,0,0,0) # only needed for dan's data, caus ehe f'ed up 
 ```
 
 Parse data to group performance
 ```{r}
+if (backgtask[6]==1) {
+  backg_pos = c(6:10)
+  notbackg = c(11:15)
+} else {
+  backg_pos = c(11:15)
+  notbackg = c(6:10)
+}
 trials$correct[1:15] = 0
 trials$correct[1:4] = training$regResp == trials$digits[1:4]
-trials$correct[11:15] = stream$regResp == trials$digits[11:15]
+trials$correct[notbackg] = stream$regResp == trials$digits[notbackg]
 trials$correct[5] = critical$catchImageResp == trials$catchImage[5]
-trials$correct[6:10] = backg$catchImageResp == trials$catchImage[6:10]
+trials$correct[backg_pos] = backg$catchImageResp == trials$catchImage[backg_pos]
 ```
 
 ```{r}
 train_perf = mean(trials$correct[1:4])
 crit_perf = trials$correct[5]
-backg_perf = mean(trials$correct[6:10])
-stream_perf = mean(trials$correct[11:15])
+backg_perf = mean(trials$correct[backg_pos])
+stream_perf = mean(trials$correct[notbackg])
 ```

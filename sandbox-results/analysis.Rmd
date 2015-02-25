@@ -28,7 +28,7 @@ trials = ans$trialInfo
 
 Parse data to group performance
 ```{r}
-if (backgtask[6]==1) {
+if (trials$backgtask[6]==1) {
   backg_pos = c(6:10)
   notbackg = c(11:15)
 } else {

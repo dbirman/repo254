@@ -12,7 +12,7 @@ library(jsonlite)
 ```{r}
 ## windows code
 # data = fromJSON(txt="C:\\Users\\Dan\\proj\\repo254\\sandbox-results\\3M23Y66PO3JLAD1Z98J7EGJJDYHS6P.json")
-data = fromJSON(txt="sandbox-results/34FNN24DCNLMNVDU3V1R4WTKYOA5Y8.json")
+data = fromJSON(txt="proj/repo254/sandbox-results/3FIUS151DV24DCLHBRW6C94PTAMGGM.json")
 # pull out the 'answer' variable
 ans = data$answer
 # get the big picture data
@@ -25,6 +25,11 @@ backg = ans$t_backg
 stream = ans$t_stream
 trials = ans$trialInfo
 ```
+
+```{r}
+# add correct info
+```
+
 
 Parse data to group performance
 ```{r}

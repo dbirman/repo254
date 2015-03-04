@@ -20,11 +20,24 @@ Let's start by convincing ourselves that t-tests have the appropriate false posi
 First do this using a `for` loop.
 
 ```{r}
+res_p = c()
+counter = 0
+for (i in 1:10000) {
+  rs = t.test(rnorm(30,0,1))$p.value
+  res_p = c(res_p,rs)
+  if (rs <= .05) {
+    counter = counter + 1
+  }
+}
+counter / 10000
 ```
 
 Next, do this using the `replicate` function:
 
 ```{r}
+rs = replicate(10000,t.test(rnorm(30,0,1))$p.value)
+count = sum(rs<=.05)
+count / 10000
 ```
 
 Ok, that was a bit boring. Let's try something moderately more interesting - let's implement a p-value sniffing simulation, in the style of Simons, Nelson, & Simonsohn (2011).
@@ -35,12 +48,22 @@ First, write a function that implements this sampling regime.
 
 ```{r}
 double.sample <- function () {
+  values = rnorm(30,0,1)
+  first = t.test(values)$p.value
+  if (first > .05 && first < .25) {
+    values = c(values, rnorm(30,0,1))
+    return(t.test(values)$p.value)
+  }
+  return(first)
 }
 ```
 
 Now call this function 10k times and find out what happens. 
 
 ```{r}
+rs = replicate(10000,double.sample())
+count = sum(rs<=.05)
+count / 10000
 ```
 
 Is there an inflation of false positives? How bad is it?
@@ -52,6 +75,21 @@ HINT: Try to do this by making the function `double.sample` take the upper p val
 HINT 2: You may need more samples. Find out by looking at how the results change from run to run.
 
 ```{r}
+double.sample2 <- function (inpVal,values) {
+  if (length(values) == 0) {
+    vals = rnorm(30,0,1)
+    return(double.sample(t.test(vals),vals))
+  }
+  if (inpVal > .05) {
+    nvals = c(values, rnorm(30,0,1))
+    return(double.sample(t.test(nvals),nvals))
+  } else {
+    return(inpVal)
+  }
+}
+rs2 = replicate(10000,double.sample2(1,c()))
+c2 = sum(rs2<=.05)
+c2 / 10000
 ```
 
 What do you conclude on the basis of this simulation? How bad is this kind of data-dependent policy?
@@ -69,6 +107,9 @@ and vitamin C. This is super simple. (Try `?ToothGrowth`).
 First plot the data, we'll use `qplot` to understand how `len` (tooth length) depends on `dose` (amount of Vitamin C) and `supp` (delivery method).
 
 ```{r}
+ggplot(ToothGrowth,aes(dose,len,color=supp)) +
+  geom_point(position=position_jitter(width=.05,height=0)) +
+  geom_smooth(method='lm')
 ```
 
 So now you see what's going on. 
@@ -76,11 +117,18 @@ So now you see what's going on.
 Next, always make a histogram of the DV before making a linear model! This reveals the distribution and can be helpful in choosing your model type.
 
 ```{r}
+ggplot(ToothGrowth) +
+  geom_histogram(aes(x=len)) +
+  facet_grid(.~supp)
 ```
+
+This doesn't look normal, but we should keep in mind what we saw in the overall plot--the differenc emay be due to a bimodal distribution at lower doses.
 
 Now make a linear model of tooth lengths using `lm`. Try making one with main effects and interactions and another with just main  effects. Make sure to assign them to variables so that you can get them later.
 
 ```{r}
+rs1 = lm(len~supp+dose)
+rs2 = lm(len~supp*dose)
 ```
 
 Now try taking out the intercept, using a -1 term in the formula. what does this do?

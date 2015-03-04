@@ -156,18 +156,20 @@ I'll use rs2 since an anova across results suggests that, despite the increase i
 anova(rs1,rs2)
 ```
 
-
 HINT: use the `predict` function ...
 
 HINT 2: you will have to make a dataframe to do the prediction with, so use something like `data.frame(dose=...)`.
 
 ```{r}
+predictAt = data.frame(dose=c(0,1.5,2.5,10,0,1.5,2.5,10),supp=c("OJ","OJ","OJ","OJ","VC","VC","VC","VC"))
+out = predict(rs1,predictAt)
 ```
 
 Now plot the residuals from the original model. How do they look?
 HINT: `?resid`
 
 ```{r}
+plot(resid(rs1))
 ```
 
 
@@ -176,6 +178,7 @@ BONUS: test them for normality of distribution using a quantile-quantile plot.
 HINT: `?qqplot` and `?qqnorm`
 
 ```{r}
+qqnorm(resid(rs1))
 ```
 
 
@@ -187,15 +190,36 @@ What the heck is going on? Load data from Frank, Vul, Saxe (2011, Infancy), a st
 Try to figure out what the most reasonable linear model of the data is.
 
 ```{r}
-d <- read.csv("../data/FVS2011-hands.csv")
-
+d <- read.csv("C:\\Users\\dan\\proj\\repo254\\data\\FVS2011-hands.csv")
+library(lme4)
 ```
+
+```{r}
+rs1 = lm(data=d,hand.look~1)
+rs2 = lm(data=d,hand.look~age)
+rs3 = lm(data=d,hand.look~age+condition)
+rs4 = lm(data=d,hand.look~age*condition)
+anova(rs1,rs2,rs3,rs4)
+```
+
+```{r}
+rs5= lmer(data=d, hand.look ~ age * condition + (1|subid))
+AIC(rs4)
+AIC(rs5)
+```
+
+rs5 is the largest model we can compute on this dataset. According to a stepwise forward regression we identified the best predictive model to be a linear model with age, condition, and their interaction, but no random effect of individual intercept.
 
 Plot that model on the same plot as the data.
 
 HINT: you can do this either using `predict` or (if you are feeling confident of your understanding of the models) using the built-in linear models in `ggplot`'s `geom_smooth`. 
 
 ```{r}
+d %>%
+  ggplot(data=.,aes(age,hand.look,color=condition)) +
+  geom_point() + 
+  geom_smooth(method='lm',formula=y~x)
 ```
 
 What do you conclude from this pattern of data?
+

@@ -127,22 +127,35 @@ This doesn't look normal, but we should keep in mind what we saw in the overall 
 Now make a linear model of tooth lengths using `lm`. Try making one with main effects and interactions and another with just main  effects. Make sure to assign them to variables so that you can get them later.
 
 ```{r}
-rs1 = lm(len~supp+dose)
-rs2 = lm(len~supp*dose)
+rs1 = lm(data=ToothGrowth,len~supp+dose)
+rs2 = lm(data=ToothGrowth,len~supp*dose)
 ```
 
 Now try taking out the intercept, using a -1 term in the formula. what does this do?
 
 ```{r}
+rs1_noi = lm(data=ToothGrowth,len~supp+dose-1)
 ```
+
+The model is now len ~ dose + supp + e instead of len ~ i + dose + supp + e, dose being 0.5, 1.0, 2.0 and supp being a factor with two levels. 
 
 Thought question: Take a moment to interpret the coefficients of the model. 
 Q1 - What are the units?
+Great question, probably mm. Doesn't specify in the dataset.
 Q2 - How does the interaction relate to the plot?
+It allows for the different slopes (across doses) for the different supp groups.
 Q3 - Should there be an interaction in the model? What does it mean? How important is it?
+If we trust the plot then yes, probably. There is very different tooth growth at low doses (0.5) while the difference vanishes at high doses (2.0). The interaction seems to be important for low doses but not at high ones.
 
 Now make predictions from the model you like the best. What should happen with
 doses of 0, 1.5, 2.5, and 10 under both supplements? 
+
+I'll use rs2 since an anova across results suggests that, despite the increase in degrees of freedom with the interaction term we nevertheless capture significantly more variance.
+
+```{r}
+anova(rs1,rs2)
+```
+
 
 HINT: use the `predict` function ...
 

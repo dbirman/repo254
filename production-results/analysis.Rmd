@@ -9,7 +9,8 @@ output: html_document
 library(jsonlite)
 library(ggplot2)
 library(grid)
-setwd('/Users/dan/proj/repo254/production-results/')
+setwd('C:\\Users\\Dan\\proj\\repo254\\production-results\\')
+# setwd('/Users/dan/proj/repo254/production-results/')
 ```
 
 ```{r}
@@ -89,8 +90,8 @@ parseData = function(file) {
   }
   backg_perf = mean(trials$correct[backg_pos])
   stream_perf = mean(trials$correct[notbackg])
-  
-  return(data.frame(train_perf,crit_perf,backg_perf,stream_perf,backg_immed,backg_immed_inc,backg_class,backg_blind))
+
+  return(data.frame(train_perf,crit_perf,backg_perf,stream_perf,backg_immed,backg_immed_inc,backg_class,backg_blind,catchImg=trials$catchImage[5],catchCat=substr(trials$catchImage[5],1,1)))
 }
 ```
 

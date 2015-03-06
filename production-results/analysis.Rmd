@@ -53,6 +53,7 @@ parseData = function(file) {
   trials$correct[notbackg] = stream$regResp == trials$digits[notbackg]
   trials$correct[5] = critical$catchImageResp == trials$catchImage[5]
   trials$correct[backg_pos] = backg$catchImageResp == trials$catchImage[backg_pos]
+#   trials$correct[backg_pos] = substr(backg$catchImageResp,1,1) == substr(trials$catchImage[backg_pos],1,1)
   backg_immed = 0
   backg_immed_inc = 0
   backg_class = 0
@@ -157,7 +158,7 @@ ses = sqrt((values*(1-values))/c(30,29,29,30,29,29,30,29,29))
 out = data.frame(value = values, sd = ses, dataset=c(0,1,2,0,1,2,0,1,2),
                  group=c(1,1,1,2,2,2,3,3,3))
 out$dataset = factor(out$dataset,levels=c(0,1,2),labels=c("Cohen et al. 2011","Birman Replication","Birman Rep: Attending\nto Background"))
-out$group = factor(out$group,levels=c(1,2,3),labels=c("Blind","Chose Correct Image\nImmediately","Chose Correct Image\nAfter Questions"))
+out$group = factor(out$group,levels=c(1,2,3),labels=c("Blind","Chose Correct Category\nImmediately","Chose Correct Category\nAfter Questions"))
 ggplot(out,aes(group,value,fill=dataset)) +
   geom_bar(stat="identity",position="dodge",width=.75) +
   geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position="dodge",width=.75,color='darkgray') +
@@ -177,7 +178,7 @@ ses = sqrt((values*(1-values))/c(29,29,29,29,29,29,29,29))
 out = data.frame(value = values, sd = ses, dataset=c(1,2,1,2,1,2,1,2),
                  group=c(0,0,1,1,2,2,3,3))
 out$dataset = factor(out$dataset,levels=c(1,2),labels=c("Birman Replication","Birman Rep: Attending\nto Background"))
-out$group = factor(out$group,levels=c(0,1,2,3),labels=c("Blind","Saw ''Something''\nBut Chose Wrong Image", "Saw Image Immediately","Classified After Questions"))
+out$group = factor(out$group,levels=c(0,1,2,3),labels=c("Blind","Saw ''Something''\nBut Chose Wrong Image", "Saw Image\nImmediately","Classified After Questions"))
 ggplot(out,aes(group,value,fill=dataset)) +
   geom_bar(stat="identity",position="dodge",width=.75) +
   geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position="dodge",width=.75,color='darkgray') +

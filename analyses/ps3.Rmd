@@ -8,7 +8,7 @@ output: html_document
 This is problem set #3, in which we want you to integrate your knowledge of data wrangling with some basic simulation skills and some linear modeling.
 
 ```{r}
-library(dplyr)
+library(dplyr) 
 library(ggplot2)
 ```
 
@@ -47,10 +47,10 @@ Consider this scenario: you have done an experiment, again with 30 participants 
 First, write a function that implements this sampling regime.
 
 ```{r}
-double.sample <- function () {
+double.sample <- function (lower,upper) {
   values = rnorm(30,0,1)
   first = t.test(values)$p.value
-  if (first > .05 && first < .25) {
+  if (first > lower && first < upper) {
     values = c(values, rnorm(30,0,1))
     return(t.test(values)$p.value)
   }
@@ -61,12 +61,14 @@ double.sample <- function () {
 Now call this function 10k times and find out what happens. 
 
 ```{r}
-rs = replicate(10000,double.sample())
+rs = replicate(10000,double.sample(.05,.25))
 count = sum(rs<=.05)
 count / 10000
 ```
 
 Is there an inflation of false positives? How bad is it?
+
+This is already pretty bad, we're gaining about 50% of our original false positive rate. (Attempt one was .0716, two .07), looks like on average it comes out around .07.
 
 Now modify this code so that you can investigate this "double the sample" rule in a bit more depth. Let's see what happens when you double the sample ANY time p > .05 (not just when p < .25), or when you do it only if p < .5 or < .75. How do these choices affect the false positive rate?
 
@@ -74,25 +76,33 @@ HINT: Try to do this by making the function `double.sample` take the upper p val
 
 HINT 2: You may need more samples. Find out by looking at how the results change from run to run.
 
+
 ```{r}
-double.sample2 <- function (inpVal,values) {
-  if (length(values) == 0) {
-    vals = rnorm(30,0,1)
-    return(double.sample(t.test(vals),vals))
-  }
-  if (inpVal > .05) {
-    nvals = c(values, rnorm(30,0,1))
-    return(double.sample(t.test(nvals),nvals))
-  } else {
-    return(inpVal)
-  }
-}
-rs2 = replicate(10000,double.sample2(1,c()))
+rs2 = replicate(10000,double.sample(.05,1))
 c2 = sum(rs2<=.05)
 c2 / 10000
 ```
 
-What do you conclude on the basis of this simulation? How bad is this kind of data-dependent policy?
+Anything above p>.05 is really bad, we're getting close to doubling our false positive rate at this point.
+
+
+```{r}
+rs2 = replicate(10000,double.sample(.05,.75))
+c2 = sum(rs2<=.05)
+c2 / 10000
+```
+
+.0817, .0772.
+
+The damage of this policy directly depends on how large the allowable range is. We can go farther for example and look at what happens if we restrict ourselves to repeating at lower p-values as well.
+
+```{r}
+rs2 = replicate(50000,double.sample(.01,.25))
+c2 = sum(rs2<=.01)
+c2 / 50000
+```
+
+This is pretty bad for NHST, we need to be very careful about designs to ensure that this isn't affecting results especially when they are on the borderline. Again, it's another suggestion that we shouldn't be doing NHST--we should be reporting effect sizes and considering them in a theoretical framework.
 
 
 Part 2: The Linear Model
@@ -208,7 +218,7 @@ AIC(rs4)
 AIC(rs5)
 ```
 
-rs5 is the largest model we can compute on this dataset. According to a stepwise forward regression we identified the best predictive model to be a linear model with age, condition, and their interaction, but no random effect of individual intercept.
+According to a stepwise forward regression we identified the best predictive model to be a linear model with age, condition, and their interaction, but no random effect of individual intercept.
 
 Plot that model on the same plot as the data.
 
@@ -223,3 +233,4 @@ d %>%
 
 What do you conclude from this pattern of data?
 
+We computed a linear regression model predicting hand looking time (secs) from age (months), and condition (kids alone on a white background or kids and adults in a complex scene). We found that looking time increased (4 ms/mo) more quickly for the complex scenes than the less complex ones, $\beta_{age*condition}$ = .004, t(228) = 2.39, p = .018$. In addition, looking time increases as age increases at a rate of approx. 3 ms / mo, $\beta_{age} = .003, t(228) = 2.67, p = .008$.

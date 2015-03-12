@@ -17,7 +17,6 @@ setwd('C:\\Users\\Dan\\proj\\repo254\\production-results\\')
 
 parseData = function(file) {
 #   print(file)
-  print(data$answer$fingerprint$ip)
   data = fromJSON(file)
   if (nrow(data$answer$trialInfo) > 15) {
     print('This person left fullscreen...')
@@ -160,8 +159,8 @@ out = data.frame(value = values, sd = ses, dataset=c(0,1,2,0,1,2,0,1,2),
 out$dataset = factor(out$dataset,levels=c(0,1,2),labels=c("Cohen et al. 2011","Birman Replication","Birman Rep: Attending\nto Background"))
 out$group = factor(out$group,levels=c(1,2,3),labels=c("Blind","Chose Correct Category\nImmediately","Chose Correct Category\nAfter Questions"))
 ggplot(out,aes(group,value,fill=dataset)) +
-  geom_bar(stat="identity",position="dodge",width=.75) +
-  geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position="dodge",width=.75,color='darkgray') +
+  geom_bar(stat="identity",position=position_dodge(width=.75)) +
+  geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position=position_dodge(width=.75),width=0,color='darkgray') +
   xlab('') +
   ylab('% of Participants') +
   ggtitle("Results: Cohen et al. 2011 (n=30) -- Birman Replication (n=29)") +

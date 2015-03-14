@@ -21,6 +21,7 @@ parseData = function(file) {
   if (nrow(data$answer$trialInfo) > 15) {
     print('This person left fullscreen...')
     if (file=='3EG49X351UCD25R1OOP3Z039Z03X69.json') {
+      # we have to strip the trials for this one person where they exited fullscreen
       data$answer$trialInfo = data$answer$trialInfo[-c(15,16,17,18), ]
       data$answer$t_stream = data$answer$t_stream[-c(5,6,7,8),]
     }
@@ -34,6 +35,8 @@ parseData = function(file) {
 #   print(ans$demo$age)
 #   print(ans$demo$sex)
   # get the big picture data
+
+## note: the code for fingerprints has been removed, IP addresses are potentially identifying information and the data included has now been anonymized.
   fingerprint = ans$fingerprint
   # now get the trial data
   training = ans$t_train
@@ -53,6 +56,8 @@ parseData = function(file) {
   trials$correct[1:4] = training$regResp == trials$digits[1:4]
   trials$correct[notbackg] = stream$regResp == trials$digits[notbackg]
   trials$correct[5] = critical$catchImageResp == trials$catchImage[5]
+  
+  # The next two lines are used to do the analysis for INDIV images (1) or CATEGORY information (2)
   trials$correct[backg_pos] = backg$catchImageResp == trials$catchImage[backg_pos]
 #   trials$correct[backg_pos] = substr(backg$catchImageResp,1,1) == substr(trials$catchImage[backg_pos],1,1)
   backg_immed = 0
@@ -109,13 +114,21 @@ out_rs = data.frame()
 for (i in c(1:3,5:30)) {
   out_rs = rbind(out_rs,parseData(infiles[i]))
 }
+
+out_rs$as.numeric.age. = abs(out_rs$as.numeric.age.)
 ```
 
 Demographics
 ```{r}
 print(paste('Male: ',(sum(out_rs$sex=='Male') + sum(out_rs$sex=='male'))))
 print(paste('Female: ',(sum(out_rs$sex=='Female') + sum(out_rs$sex=='female') + sum(out_rs$sex=='F'))))
-
+ggplot(out_rs,aes(as.numeric.age.)) +
+  geom_histogram(binwidth=1) +
+  geom_vline(x=mean(out_rs$as.numeric.age.)) +
+  xlab('Age') +
+  ylab('#') +
+  theme_bw()
+print(paste('Age: ',round(mean(out_rs$as.numeric.age.),2),' +- ',round(sd(out_rs$as.numeric.age.))))
 ```
 
 
@@ -143,16 +156,19 @@ t.test2 <- function(m1,m2,s1,s2,n1,n2,m0=0,equal.variance=FALSE)
 Results
 
 ```{r}
+# This code just reorganizes some things that were badly organized and turns them into percentages for printing.
 blind_perc = length(out_rs$crit_perf[out_rs$crit_perf=='blind']) / nrow(out_rs)
 class_perc = length(out_rs$crit_perf[out_rs$crit_perf=='classified']) / nrow(out_rs)
 immed_perc = length(out_rs$crit_perf[out_rs$crit_perf=='immediate']) / nrow(out_rs)
 immed_inc = length(out_rs$crit_perf[out_rs$crit_perf=='immediate_inc']) / nrow(out_rs)
 
+# Taking statistics so that we can make figures
 backg_blind_perc = mean(out_rs$backg_blind/5)
 backg_class_perc = mean(out_rs$backg_class/5)
 backg_immed_perc = mean(out_rs$backg_immed/5)
 backg_immed_inc_perc = mean(out_rs$backg_immed_inc/5)
 
+# Re-organizing for figures
 backg_list = mean(out_rs$backg_perf)
 train_perf = mean(out_rs$train_perf)
 train_sd = sd(out_rs[,1])/sqrt(nrow(out_rs))
@@ -161,15 +177,19 @@ stream_sd = sd(out_rs[,4])/sqrt(nrow(out_rs))
 ```
 
 ```{r}
+# Re-organizing for figures
 values = c(0.5,blind_perc+immed_inc,backg_immed_inc_perc+backg_blind_perc,0.23,immed_perc,backg_immed_perc,1-.5-.23,class_perc,backg_class_perc)
-ses = sqrt((values*(1-values))/c(30,29,29,30,29,29,30,29,29))
+# Calculating confidence intervals for probabilities
+ses = 1.96*sqrt((values*(1-values))/c(30,29,29,30,29,29,30,29,29))
 
 out = data.frame(value = values, sd = ses, dataset=c(0,1,2,0,1,2,0,1,2),
                  group=c(1,1,1,2,2,2,3,3,3))
+# updating labeling
 out$dataset = factor(out$dataset,levels=c(0,1,2),labels=c("Cohen et al. 2011","Birman Replication","Birman Rep: Attending\nto Background"))
 out$group = factor(out$group,levels=c(1,2,3),labels=c("Blind","Chose Correct Category\nImmediately","Chose Correct Category\nAfter Questions"))
+
 ggplot(out,aes(group,value,fill=dataset)) +
-  geom_bar(stat="identity",position=position_dodge(width=.75)) +
+  geom_bar(stat="identity",position=position_dodge(width=.75),width=.75) +
   geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position=position_dodge(width=.75),width=0,color='darkgray') +
   xlab('') +
   ylab('% of Participants') +
@@ -181,8 +201,10 @@ ggplot(out,aes(group,value,fill=dataset)) +
 ```
 
 ```{r}
+# again re-organizing values, but this time just for my data
 values = c(blind_perc,backg_blind_perc,immed_inc,backg_immed_inc_perc,immed_perc,backg_immed_perc,class_perc,backg_class_perc)
-ses = sqrt((values*(1-values))/c(29,29,29,29,29,29,29,29))
+# calculating confidence intervals
+ses = 1.96*sqrt((values*(1-values))/c(29,29,29,29,29,29,29,29))
 
 out = data.frame(value = values, sd = ses, dataset=c(1,2,1,2,1,2,1,2),
                  group=c(0,0,1,1,2,2,3,3))
@@ -190,7 +212,7 @@ out$dataset = factor(out$dataset,levels=c(1,2),labels=c("Birman Replication","Bi
 out$group = factor(out$group,levels=c(0,1,2,3),labels=c("Blind","Saw ''Something''\nBut Chose Wrong Image", "Saw Image\nImmediately","Classified After Questions"))
 ggplot(out,aes(group,value,fill=dataset)) +
   geom_bar(stat="identity",position="dodge",width=.75) +
-  geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position="dodge",width=.75,color='darkgray') +
+  geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position=position_dodge(width=.75),width=0,color='darkgray') +
   xlab('') +
   ylab('% of Participants') +
   ggtitle("Results: Cohen et al. 2011 (n=30) -- Birman Replication (n=29)") +

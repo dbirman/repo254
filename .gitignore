@@ -1,6 +1,5 @@
 ## Auth file
 
-*.json
 sandbox-results/*.json
 
 mturk-and-gmail.text

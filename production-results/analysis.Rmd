@@ -58,8 +58,8 @@ parseData = function(file) {
   trials$correct[5] = critical$catchImageResp == trials$catchImage[5]
   
   # The next two lines are used to do the analysis for INDIV images (1) or CATEGORY information (2)
-  trials$correct[backg_pos] = backg$catchImageResp == trials$catchImage[backg_pos]
-#   trials$correct[backg_pos] = substr(backg$catchImageResp,1,1) == substr(trials$catchImage[backg_pos],1,1)
+  #trials$correct[backg_pos] = backg$catchImageResp == trials$catchImage[backg_pos]
+ trials$correct[backg_pos] = substr(backg$catchImageResp,1,1) == substr(trials$catchImage[backg_pos],1,1)
   backg_immed = 0
   backg_immed_inc = 0
   backg_class = 0
@@ -201,6 +201,8 @@ ggplot(out,aes(group,value,fill=dataset)) +
 ```
 
 ```{r}
+# note, to reconstruct the figure in the report make sure to use the individual image option in parseData, no the category option
+
 # again re-organizing values, but this time just for my data
 values = c(blind_perc,backg_blind_perc,immed_inc,backg_immed_inc_perc,immed_perc,backg_immed_perc,class_perc,backg_class_perc)
 # calculating confidence intervals
@@ -208,14 +210,15 @@ ses = 1.96*sqrt((values*(1-values))/c(29,29,29,29,29,29,29,29))
 
 out = data.frame(value = values, sd = ses, dataset=c(1,2,1,2,1,2,1,2),
                  group=c(0,0,1,1,2,2,3,3))
-out$dataset = factor(out$dataset,levels=c(1,2),labels=c("Birman Replication","Birman Rep: Attending\nto Background"))
+out$dataset = factor(out$dataset,levels=c(1,2),labels=c("Attending RSVP","Attending Background"))
 out$group = factor(out$group,levels=c(0,1,2,3),labels=c("Blind","Saw ''Something''\nBut Chose Wrong Image", "Saw Image\nImmediately","Classified After Questions"))
+
 ggplot(out,aes(group,value,fill=dataset)) +
   geom_bar(stat="identity",position="dodge",width=.75) +
   geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position=position_dodge(width=.75),width=0,color='darkgray') +
   xlab('') +
-  ylab('% of Participants') +
-  ggtitle("Results: Cohen et al. 2011 (n=30) -- Birman Replication (n=29)") +
+  ylab('% of Trials') +
+  ggtitle("Birman Rep (n=29): Unattended vs. Attending Background Conditions") +
   theme_bw() +
   scale_y_continuous(limits=c(0,1)) +
   scale_fill_brewer(palette='YlOrBr') +
@@ -225,7 +228,8 @@ ggplot(out,aes(group,value,fill=dataset)) +
 
 
 ```{r}
-out = data.frame(value = c(.93,backg_immed_perc,.74,train_perf,.76,stream_perf),sd=c(NaN,sd((out_rs$backg_immed/5))/sqrt(29),.036,train_sd,.028,stream_sd),dataset=c(0,1,0,1,0,1),group=c(-1,-1,0,0,1,1))
+# again we're just re-organizing stuff...
+out = data.frame(value = c(.93,backg_immed_perc,.74,train_perf,.76,stream_perf),sd=1.96*c(NaN,sd((out_rs$backg_immed/5))/sqrt(29),.036,train_sd,.028,stream_sd),dataset=c(0,1,0,1,0,1),group=c(-1,-1,0,0,1,1))
 out$dataset = factor(out$dataset,levels=c(0,1),labels=c("Cohen et al. 2011","Birman Replication"))
 out$group = factor(out$group,levels=c(-1,0,1),labels=c("Background Task", "RSVP Task\nNo Background Image", "RSVP Task\nBackground Image"))
 
@@ -234,11 +238,11 @@ p2 = t.test2(out$value[3],out$value[4],out$sd[3],out$sd[4],8,29)
 
 ggplot(out,aes(group,value,fill=dataset)) +
   geom_bar(stat="identity",position="dodge",width=.75) +
-  geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position="dodge",width=.75,color='darkgray') +
+  geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position=position_dodge(width=.75),width=0,color='darkgray') +
   scale_fill_brewer(palette='YlOrBr') +
   xlab('') +
   ylab("(% Correct)") +
-  ggtitle("Control Task Performances: Cohen et al. 2011 Control (n=30,8,8) -- Birman Replication (n=29,29,29)") +
+  ggtitle("Control Tasks: Cohen et al. 2011 Control (n=30,8,8) -- Birman Replication (n=29,29,29)") +
   scale_y_continuous(limits=c(0,1)) +
   theme_bw() +
   theme(panel.border=element_blank())

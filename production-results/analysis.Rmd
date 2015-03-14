@@ -190,7 +190,7 @@ out$group = factor(out$group,levels=c(1,2,3),labels=c("Blind","Chose Correct Cat
 
 ggplot(out,aes(group,value,fill=dataset)) +
   geom_bar(stat="identity",position=position_dodge(width=.75),width=.75) +
-  geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position=position_dodge(width=.75),width=0,color='darkgray') +
+  #geom_errorbar(aes(ymin=value-sd,ymax=value+sd),position=position_dodge(width=.75),width=0,color='darkgray') +
   xlab('') +
   ylab('% of Participants') +
   ggtitle("Results: Cohen et al. 2011 (n=30) -- Birman Replication (n=29)") +

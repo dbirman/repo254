@@ -8,7 +8,7 @@ output: html_document
 This is problem set #3, in which we want you to integrate your knowledge of data wrangling with some basic simulation skills and some linear modeling.
 
 ```{r}
-library(dplyr) 
+library(dplyr)
 library(ggplot2)
 ```
 
@@ -55,6 +55,8 @@ double.sample <- function (lower,upper) {
     return(t.test(values)$p.value)
   }
   return(first)
+=======
+double.sample <- function () {
 }
 ```
 
@@ -68,14 +70,18 @@ count / 10000
 
 Is there an inflation of false positives? How bad is it?
 
+<<<<<<< HEAD
 This is already pretty bad, we're gaining about 50% of our original false positive rate. (Attempt one was .0716, two .07), looks like on average it comes out around .07.
 
+=======
+>>>>>>> 8dce80c003f0c712a34dea938a876fd5107fb469
 Now modify this code so that you can investigate this "double the sample" rule in a bit more depth. Let's see what happens when you double the sample ANY time p > .05 (not just when p < .25), or when you do it only if p < .5 or < .75. How do these choices affect the false positive rate?
 
 HINT: Try to do this by making the function `double.sample` take the upper p value as an argument, so that you can pass this through dplyr.
 
 HINT 2: You may need more samples. Find out by looking at how the results change from run to run.
 
+<<<<<<< HEAD
 
 ```{r}
 rs2 = replicate(10000,double.sample(.05,1))
@@ -103,6 +109,12 @@ c2 / 50000
 ```
 
 This is pretty bad for NHST, we need to be very careful about designs to ensure that this isn't affecting results especially when they are on the borderline. Again, it's another suggestion that we shouldn't be doing NHST--we should be reporting effect sizes and considering them in a theoretical framework.
+=======
+```{r}
+```
+
+What do you conclude on the basis of this simulation? How bad is this kind of data-dependent policy?
+>>>>>>> 8dce80c003f0c712a34dea938a876fd5107fb469
 
 
 Part 2: The Linear Model
@@ -120,6 +132,7 @@ First plot the data, we'll use `qplot` to understand how `len` (tooth length) de
 ggplot(ToothGrowth,aes(dose,len,color=supp)) +
   geom_point(position=position_jitter(width=.05,height=0)) +
   geom_smooth(method='lm')
+
 ```
 
 So now you see what's going on. 
@@ -141,6 +154,9 @@ rs1 = lm(data=ToothGrowth,len~supp+dose)
 rs2 = lm(data=ToothGrowth,len~supp*dose)
 ```
 
+Now make a linear model of tooth lengths using `lm`. Try making one with main effects and interactions and another with just main  effects. Make sure to assign them to variables so that you can get them later.
+
+
 Now try taking out the intercept, using a -1 term in the formula. what does this do?
 
 ```{r}
@@ -156,6 +172,13 @@ Q2 - How does the interaction relate to the plot?
 It allows for the different slopes (across doses) for the different supp groups.
 Q3 - Should there be an interaction in the model? What does it mean? How important is it?
 If we trust the plot then yes, probably. There is very different tooth growth at low doses (0.5) while the difference vanishes at high doses (2.0). The interaction seems to be important for low doses but not at high ones.
+=======
+```
+
+Thought question: Take a moment to interpret the coefficients of the model. 
+Q1 - What are the units?
+Q2 - How does the interaction relate to the plot?
+Q3 - Should there be an interaction in the model? What does it mean? How important is it?
 
 Now make predictions from the model you like the best. What should happen with
 doses of 0, 1.5, 2.5, and 10 under both supplements? 
@@ -234,3 +257,148 @@ d %>%
 What do you conclude from this pattern of data?
 
 We computed a linear regression model predicting hand looking time (secs) from age (months), and condition (kids alone on a white background or kids and adults in a complex scene). We found that looking time increased (4 ms/mo) more quickly for the complex scenes than the less complex ones, $\beta_{age*condition}$ = .004, t(228) = 2.39, p = .018$. In addition, looking time increases as age increases at a rate of approx. 3 ms / mo, $\beta_{age} = .003, t(228) = 2.67, p = .008$.
+=======
+d <- read.csv("../data/FVS2011-hands.csv")
+
+```
+
+Plot that model on the same plot as the data.
+
+HINT: you can do this either using `predict` or (if you are feeling confident of your understanding of the models) using the built-in linear models in `ggplot`'s `geom_smooth`. 
+
+```{r}
+```
+
+What do you conclude from this pattern of data?
+
+3: Linear Mixed Effect Models
+=============================
+
+The goal here is to learn to use LMEMs using `lme4` and to compare them to
+standard by subject, by item LMs, as well as the standard (no repeated measures) fixed effects GLM.
+
+The dataset here is from Stiller, Goodman, & Frank (2014), a paper on children's pragmatic inferences. We saw the paradigm in the counterbalancing lecture: it's three faces: a smiley, a smiley with glasses, and a smiley with a hat and glasses. When told "my friend has glasses" do kids pick the one with the glasses and no hat? `age.group` is the kids' age group, `condition` is either "label," described above, or "no label," which was a control condition in which kids picked without hearing the term "glasses" at all. 
+
+```{r}
+d <- read.csv("../data/scales.csv")
+d$age.group <- factor(d$age.group)
+```
+
+Always begin with a histogram!
+
+```{r}
+```
+
+Brief Confidence Interval Digression
+------------------------------------
+
+Start out by setting up a function for a 95% CI using the normal approximation.
+
+```{r}
+ci95.norm <- function(x) {
+}
+```
+
+But the number of participants in a group is likely to be < 30, so let's also compute this with a t distribution.
+
+```{r}
+ci95.t <- function(x) {
+}
+```
+
+On the other hand, maybe we should use bootstrap CIs because these are actually  proportions, and the normal/t approximations don't know that they are 0/1 bounded.
+
+```{r}
+library(boot)
+library(bootstrap)
+```
+
+Take a look at `?boot` and `?bootci`. Note that the syntax for the `boot` library is terrible, so we're going to use it to check some code that I use:
+
+```{r}
+theta <- function(x,xdata,na.rm=T) {mean(xdata[x],na.rm=na.rm)}
+ci.low <- function(x,na.rm=T) {
+  mean(x,na.rm=na.rm) - 
+    quantile(bootstrap(1:length(x),
+                       10000,theta,x,na.rm=na.rm)$thetastar,.025,na.rm=na.rm)}
+ci.high <- function(x,na.rm=T) {
+  quantile(bootstrap(1:length(x),
+                     10000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - 
+    mean(x,na.rm=na.rm)}
+```
+
+Now make 95% confidence intervals across participants using all the methods above:
+
+- Normal
+- t
+- Bootstrap percentile using `boot.ci`
+- Bootstrap percentile using my code
+
+```{r}
+```
+
+Now plot the data by age and condition using `dplyr` and `ggplot2`. Plot some CIs on here - extra credit if you plot all of them and compare visually (you'll need `position = position_dodge()` or some other way to offset them).  
+
+```{r}
+```
+
+What do you conclude about confidence interval computation?
+
+Back to LMEMs
+-------------
+
+```{r}
+library(lme4)
+```
+
+OK, now do a basic GLM over the entire data frame, using `age.group`, `condition`, and their interaction to predict correctness. (If we were focusing on developmental issues, I would ask you to think about how to model age here, but let's treat it as three discrete groups for now). 
+
+NOTE: this model is not appropriate, because it assumes that each subject's observations are independent from one another. It's still fine to do the analysis, though: it can tell you a lot about the data and is easy and fast to fit, as long as you know that you can't trust the p-values!
+
+```{r}
+```
+
+Let's now use `dplyr` to get data frames for by-items (`msi`) and by-subjects (`mss`) analyses. `msi` should contain the mean ratings for every item and `mss` should contain the mean ratings for every subject.
+
+```{r}
+```
+
+Now do standard linear models on each of these.
+
+NOTE: These are not strictly correct either because of the normal approximation on percent correct (model doesn't know it's 0 - 1 bounded and could give you standard error that goes above 1). Again, useful to do and see what happens.
+
+```{r}
+```
+
+Do ANOVA on these. Note that ANOVA doesn't let you figure out what is going on with individual levels of age.
+
+```{r}
+```
+
+On to linear mixed effect models. Create the maximal random effects model a la Barr et al. (2013). Does it converge? If not, what will you do to make it converge? (The internet can be your friend here).
+
+HINT: try simplifying your model to a "semi-maximal" model. Bonus: try using a different fitting procedure on the maximal model.
+
+HINT: make sure that you consider which random effects are appropriate. Consider which observations are within/between subjects. E.g. having a random coefficient for age by subject doesn't make sense, because each subject has only one age.
+
+
+```{r}
+```
+
+How do these coefficients compare with the independent coefficients linear model? What do you conclude?
+
+Which random effects make the most difference? Find out using `ranef`. Plot the random effects for subject and item.
+
+```{r}
+```
+
+Make the minimal random effects model with just a subject intecept. How does this compare?
+
+```{r}
+```
+
+Get an estimate of the significance value for the coefficient on the `age*condition` interaction by using anova to compare between your semi-maximal model and the model without an intercept.
+
+```{r}
+```
+>>>>>>> 8dce80c003f0c712a34dea938a876fd5107fb469

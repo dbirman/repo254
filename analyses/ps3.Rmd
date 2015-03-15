@@ -55,8 +55,6 @@ double.sample <- function (lower,upper) {
     return(t.test(values)$p.value)
   }
   return(first)
-=======
-double.sample <- function () {
 }
 ```
 
@@ -109,12 +107,6 @@ c2 / 50000
 ```
 
 This is pretty bad for NHST, we need to be very careful about designs to ensure that this isn't affecting results especially when they are on the borderline. Again, it's another suggestion that we shouldn't be doing NHST--we should be reporting effect sizes and considering them in a theoretical framework.
-=======
-```{r}
-```
-
-What do you conclude on the basis of this simulation? How bad is this kind of data-dependent policy?
->>>>>>> 8dce80c003f0c712a34dea938a876fd5107fb469
 
 
 Part 2: The Linear Model
@@ -172,13 +164,6 @@ Q2 - How does the interaction relate to the plot?
 It allows for the different slopes (across doses) for the different supp groups.
 Q3 - Should there be an interaction in the model? What does it mean? How important is it?
 If we trust the plot then yes, probably. There is very different tooth growth at low doses (0.5) while the difference vanishes at high doses (2.0). The interaction seems to be important for low doses but not at high ones.
-=======
-```
-
-Thought question: Take a moment to interpret the coefficients of the model. 
-Q1 - What are the units?
-Q2 - How does the interaction relate to the plot?
-Q3 - Should there be an interaction in the model? What does it mean? How important is it?
 
 Now make predictions from the model you like the best. What should happen with
 doses of 0, 1.5, 2.5, and 10 under both supplements? 
@@ -269,20 +254,21 @@ standard by subject, by item LMs, as well as the standard (no repeated measures)
 The dataset here is from Stiller, Goodman, & Frank (2014), a paper on children's pragmatic inferences. We saw the paradigm in the counterbalancing lecture: it's three faces: a smiley, a smiley with glasses, and a smiley with a hat and glasses. When told "my friend has glasses" do kids pick the one with the glasses and no hat? `age.group` is the kids' age group, `condition` is either "label," described above, or "no label," which was a control condition in which kids picked without hearing the term "glasses" at all. 
 
 ```{r}
-d <- read.csv("../data/scales.csv")
+d <- read.csv("C:\\Users\\dan\\proj\\repo254\\data\\scales.csv")
 d$age.group <- factor(d$age.group)
 ```
 
 Always begin with a histogram!
 
 ```{r}
-# This isn't really a histogram, but I don't know what the heck histogram you want. So I just did this because I understand the output.
+# Not a histogram, but I find this more useful for looking at the data.
 d %>%
-  group_by(age) %>%
+  group_by(age,condition) %>%
   summarise(mu=mean(correct)) %>%
-  ggplot(.,aes(age,mu)) +
-  geom_point() +
-  geom_smooth(method="lm",color='orange')
+  ggplot(.,aes(age,mu,color=condition)) +
+  geom_point(size=3) +
+  ylab('% Correct') +
+  theme_bw()
 ```
 
 Brief Confidence Interval Digression
@@ -364,7 +350,7 @@ d %>%
 
 What do you conclude about confidence interval computation?
 
-It's easy to do.
+Not sure what the point is here.. I prefer bootstrapping in my own statistics because it preserves the true sampling distribution... not much more to say. Unless bootstrapping is computationally infeasible it should be used.
 
 Back to LMEMs
 -------------
@@ -378,7 +364,9 @@ OK, now do a basic GLM over the entire data frame, using `age.group`, `condition
 NOTE: this model is not appropriate, because it assumes that each subject's observations are independent from one another. It's still fine to do the analysis, though: it can tell you a lot about the data and is easy and fast to fit, as long as you know that you can't trust the p-values!
 
 ```{r}
-rs = lm(data=d,correct ~ age.group * condition)
+# since we're just using this as a test, I'll pretend the age groups are numeric so we can get an easy to interpret estimate of the interaction
+rs = lm(data=d,correct ~ as.numeric(age.group) * condition)
+summary(rs)
 ```
 
 Let's now use `dplyr` to get data frames for by-items (`msi`) and by-subjects (`mss`) analyses. `msi` should contain the mean ratings for every item and `mss` should contain the mean ratings for every subject.
@@ -397,14 +385,18 @@ Now do standard linear models on each of these.
 NOTE: These are not strictly correct either because of the normal approximation on percent correct (model doesn't know it's 0 - 1 bounded and could give you standard error that goes above 1). Again, useful to do and see what happens.
 
 ```{r}
-rs1 = lm(data=msi,mu~age.group * condition)
-rs2 = lm(data=mss,mu~age.group * condition)
+rs1 = lm(data=msi,mu~as.numeric(age.group) * condition)
+rs2 = lm(data=mss,mu~as.numeric(age.group) * condition)
 ```
+There's basically no difference between these models
 
 Do ANOVA on these. Note that ANOVA doesn't let you figure out what is going on with individual levels of age.
 
 ```{r}
-anova(rs1,rs2)
+# I can't use the anova, so I just compared AIC
+AIC(rs1) # better model according to AIC
+AIC(rs2)
+# anova(rs1,rs2)
 ```
 
 On to linear mixed effect models. Create the maximal random effects model a la Barr et al. (2013). Does it converge? If not, what will you do to make it converge? (The internet can be your friend here).
@@ -415,12 +407,32 @@ HINT: make sure that you consider which random effects are appropriate. Consider
 
 
 ```{r}
-rs = lmer(data=d,correct ~ age.group * trial * condition + (1|subid) + (1|trial))
+rs = lmer(data=d,correct ~ as.numeric(age.group) * condition + trial + (1+condition|subid) + (1|trial))
 ```
 
 How do these coefficients compare with the independent coefficients linear model? What do you conclude?
 
+Coeffs from lmer:
+as.numeric(age.group)                    0.10071    0.03363   2.994
+conditionNo Label                       -0.16729    0.09759  -1.714
+trialfaces                              -0.08844    0.62197  -0.142
+trialhouses                             -0.14966    0.62197  -0.241
+trialpasta                              -0.01361    0.62197  -0.022
+as.numeric(age.group):conditionNo Label -0.15800    0.04535  -3.484
+
+From lm:
+as.numeric(age.group)                    0.10042    0.03790   2.649  0.01539 *  
+conditionNo Label                       -0.16732    0.11580  -1.445  0.16397    
+as.numeric(age.group):conditionNo Label -0.15771    0.05360  -2.942  0.00806 ** 
+
+For the carried over things, nothing much has changed, but now we additionally have information about the trials and an estimate of the random effects, suggesting that the between item variance is high:
+
+ trial    (Intercept)       0.19222  0.4384        
+
+
 Which random effects make the most difference? Find out using `ranef`. Plot the random effects for subject and item.
+
+The items do, see above.
 
 ```{r}
 ```
@@ -428,10 +440,11 @@ Which random effects make the most difference? Find out using `ranef`. Plot the 
 Make the minimal random effects model with just a subject intecept. How does this compare?
 
 ```{r}
-rs = lmer(data=d,correct ~ (1|subid))
+rs3 = lmer(data=d,correct ~ (1|subid))
 ```
 
 Get an estimate of the significance value for the coefficient on the `age*condition` interaction by using anova to compare between your semi-maximal model and the model without an intercept.
 
+What?? I have no idea why 
 ```{r}
 ```

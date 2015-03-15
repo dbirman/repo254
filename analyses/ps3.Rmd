@@ -257,17 +257,6 @@ d %>%
 What do you conclude from this pattern of data?
 
 We computed a linear regression model predicting hand looking time (secs) from age (months), and condition (kids alone on a white background or kids and adults in a complex scene). We found that looking time increased (4 ms/mo) more quickly for the complex scenes than the less complex ones, $\beta_{age*condition}$ = .004, t(228) = 2.39, p = .018$. In addition, looking time increases as age increases at a rate of approx. 3 ms / mo, $\beta_{age} = .003, t(228) = 2.67, p = .008$.
-=======
-d <- read.csv("../data/FVS2011-hands.csv")
-
-```
-
-Plot that model on the same plot as the data.
-
-HINT: you can do this either using `predict` or (if you are feeling confident of your understanding of the models) using the built-in linear models in `ggplot`'s `geom_smooth`. 
-
-```{r}
-```
 
 What do you conclude from this pattern of data?
 
@@ -287,6 +276,13 @@ d$age.group <- factor(d$age.group)
 Always begin with a histogram!
 
 ```{r}
+# This isn't really a histogram, but I don't know what the heck histogram you want. So I just did this because I understand the output.
+d %>%
+  group_by(age) %>%
+  summarise(mu=mean(correct)) %>%
+  ggplot(.,aes(age,mu)) +
+  geom_point() +
+  geom_smooth(method="lm",color='orange')
 ```
 
 Brief Confidence Interval Digression
@@ -295,15 +291,22 @@ Brief Confidence Interval Digression
 Start out by setting up a function for a 95% CI using the normal approximation.
 
 ```{r}
-ci95.norm <- function(x) {
+ci95 <- function(x) {
+  mu = mean(x)
+  s = sd(x)
+  if (length(x) >= 30) {
+    return(c(mu-1.96*s,mu+1.96*s))
+  } else {
+    val = qt(.975,length(x))
+    return(c(mu-val*s,mu+val*s))
+  }
 }
 ```
 
 But the number of participants in a group is likely to be < 30, so let's also compute this with a t distribution.
 
 ```{r}
-ci95.t <- function(x) {
-}
+# I automated this with the above function
 ```
 
 On the other hand, maybe we should use bootstrap CIs because these are actually  proportions, and the normal/t approximations don't know that they are 0/1 bounded.
@@ -325,6 +328,9 @@ ci.high <- function(x,na.rm=T) {
   quantile(bootstrap(1:length(x),
                      10000,theta,x,na.rm=na.rm)$thetastar,.975,na.rm=na.rm) - 
     mean(x,na.rm=na.rm)}
+ci.boot <- function(x) {
+  return(c(ci.low(x),ci.high(x)))
+}
 ```
 
 Now make 95% confidence intervals across participants using all the methods above:
@@ -335,14 +341,30 @@ Now make 95% confidence intervals across participants using all the methods abov
 - Bootstrap percentile using my code
 
 ```{r}
+ci95(d$correct) # note this does the t or normal, whichever is appropriate
+samplemean <- function(x,d) {return(mean(x[d]))}
+boot.ci(boot(d$correct,samplemean,1000))
+ci.boot(d$correct)
 ```
 
 Now plot the data by age and condition using `dplyr` and `ggplot2`. Plot some CIs on here - extra credit if you plot all of them and compare visually (you'll need `position = position_dodge()` or some other way to offset them).  
 
 ```{r}
+d %>%
+  group_by(age.group,condition) %>%
+  summarise(mu=mean(correct),high=ci.high(correct),low=ci.low(correct)) %>%
+  ggplot(.,aes(age.group,mu,fill=condition)) +
+  geom_bar(stat="identity",position=position_dodge(),width=.6) +
+  geom_errorbar(aes(age.group,mu,ymin=mu-low,ymax=mu+high),width=0,position=position_dodge(width=.6)) +
+  ylab("Mean % Correct") +
+  xlab("Age Group") +
+  theme_bw()
+
 ```
 
 What do you conclude about confidence interval computation?
+
+It's easy to do.
 
 Back to LMEMs
 -------------
@@ -356,11 +378,18 @@ OK, now do a basic GLM over the entire data frame, using `age.group`, `condition
 NOTE: this model is not appropriate, because it assumes that each subject's observations are independent from one another. It's still fine to do the analysis, though: it can tell you a lot about the data and is easy and fast to fit, as long as you know that you can't trust the p-values!
 
 ```{r}
+rs = lm(data=d,correct ~ age.group * condition)
 ```
 
 Let's now use `dplyr` to get data frames for by-items (`msi`) and by-subjects (`mss`) analyses. `msi` should contain the mean ratings for every item and `mss` should contain the mean ratings for every subject.
 
 ```{r}
+msi = d %>%
+  group_by(trial,age.group,condition) %>%
+  summarise(mu=mean(correct))
+mss = d %>%
+  group_by(subid,age.group,condition) %>%
+  summarise(mu=mean(correct))
 ```
 
 Now do standard linear models on each of these.
@@ -368,11 +397,14 @@ Now do standard linear models on each of these.
 NOTE: These are not strictly correct either because of the normal approximation on percent correct (model doesn't know it's 0 - 1 bounded and could give you standard error that goes above 1). Again, useful to do and see what happens.
 
 ```{r}
+rs1 = lm(data=msi,mu~age.group * condition)
+rs2 = lm(data=mss,mu~age.group * condition)
 ```
 
 Do ANOVA on these. Note that ANOVA doesn't let you figure out what is going on with individual levels of age.
 
 ```{r}
+anova(rs1,rs2)
 ```
 
 On to linear mixed effect models. Create the maximal random effects model a la Barr et al. (2013). Does it converge? If not, what will you do to make it converge? (The internet can be your friend here).
@@ -383,6 +415,7 @@ HINT: make sure that you consider which random effects are appropriate. Consider
 
 
 ```{r}
+rs = lmer(data=d,correct ~ age.group * trial * condition + (1|subid) + (1|trial))
 ```
 
 How do these coefficients compare with the independent coefficients linear model? What do you conclude?
@@ -395,10 +428,10 @@ Which random effects make the most difference? Find out using `ranef`. Plot the 
 Make the minimal random effects model with just a subject intecept. How does this compare?
 
 ```{r}
+rs = lmer(data=d,correct ~ (1|subid))
 ```
 
 Get an estimate of the significance value for the coefficient on the `age*condition` interaction by using anova to compare between your semi-maximal model and the model without an intercept.
 
 ```{r}
 ```
->>>>>>> 8dce80c003f0c712a34dea938a876fd5107fb469

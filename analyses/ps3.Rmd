@@ -365,7 +365,7 @@ NOTE: this model is not appropriate, because it assumes that each subject's obse
 
 ```{r}
 # since we're just using this as a test, I'll pretend the age groups are numeric so we can get an easy to interpret estimate of the interaction
-rs = lm(data=d,correct ~ as.numeric(age.group) * condition)
+rs = glm(data=d,correct ~ as.numeric(age.group) * condition)
 summary(rs)
 ```
 
@@ -385,8 +385,8 @@ Now do standard linear models on each of these.
 NOTE: These are not strictly correct either because of the normal approximation on percent correct (model doesn't know it's 0 - 1 bounded and could give you standard error that goes above 1). Again, useful to do and see what happens.
 
 ```{r}
-rs1 = lm(data=msi,mu~as.numeric(age.group) * condition)
-rs2 = lm(data=mss,mu~as.numeric(age.group) * condition)
+rs1 = glm(data=msi,mu~as.numeric(age.group) * condition)
+rs2 = glm(data=mss,mu~as.numeric(age.group) * condition)
 ```
 There's basically no difference between these models
 
@@ -399,6 +399,8 @@ AIC(rs2)
 # anova(rs1,rs2)
 ```
 
+The AIC outcome suggests the rs1 model fits better, so the data have more variability explained by items than by subjects.
+
 On to linear mixed effect models. Create the maximal random effects model a la Barr et al. (2013). Does it converge? If not, what will you do to make it converge? (The internet can be your friend here).
 
 HINT: try simplifying your model to a "semi-maximal" model. Bonus: try using a different fitting procedure on the maximal model.
@@ -407,44 +409,58 @@ HINT: make sure that you consider which random effects are appropriate. Consider
 
 
 ```{r}
-rs = lmer(data=d,correct ~ as.numeric(age.group) * condition + trial + (1+condition|subid) + (1|trial))
+# Ian helped me figure out that using this optimizer would allow the model to converge, although I also noticed that the correlation between a lot of the random effects is 1--suggesting that something is very wrong.
+rs = glmer(data=d,correct ~ as.numeric(age.group)*condition + (condition*age.group|trial) + (1|subid),family="binomial",control=glmerControl(optimizer="bobyqa"))
+
+# rather than use this, I'll simplify more... so that w eodn't need to the optimizer
+rs = glmer(data=d,correct ~ as.numeric(age.group)*condition + (condition+as.numeric(age.group)|trial) + (1|subid),family="binomial")
 ```
 
 How do these coefficients compare with the independent coefficients linear model? What do you conclude?
-
-Coeffs from lmer:
-as.numeric(age.group)                    0.10071    0.03363   2.994
-conditionNo Label                       -0.16729    0.09759  -1.714
-trialfaces                              -0.08844    0.62197  -0.142
-trialhouses                             -0.14966    0.62197  -0.241
-trialpasta                              -0.01361    0.62197  -0.022
-as.numeric(age.group):conditionNo Label -0.15800    0.04535  -3.484
+Fixed effects:
+                                        Estimate Std. Error z value Pr(>|z|)    
+(Intercept)                              -0.1652     0.3660  -0.451 0.651726    
+as.numeric(age.group)                     0.5762     0.2014   2.861 0.004218 ** 
+conditionNo Label                        -0.4865     0.5509  -0.883 0.377223    
+as.numeric(age.group):conditionNo Label  -0.9902     0.2795  -3.542 0.000397 ***
 
 From lm:
-as.numeric(age.group)                    0.10042    0.03790   2.649  0.01539 *  
-conditionNo Label                       -0.16732    0.11580  -1.445  0.16397    
-as.numeric(age.group):conditionNo Label -0.15771    0.05360  -2.942  0.00806 ** 
+                                        Estimate Std. Error t value Pr(>|t|)    
+(Intercept)                              0.48326    0.06608   7.314 8.62e-13 ***
+as.numeric(age.group)                    0.10071    0.03081   3.269 0.001144 ** 
+conditionNo Label                       -0.16729    0.09427  -1.775 0.076491 .  
+as.numeric(age.group):conditionNo Label -0.15800    0.04379  -3.608 0.000335 ***
 
-For the carried over things, nothing much has changed, but now we additionally have information about the trials and an estimate of the random effects, suggesting that the between item variance is high:
-
- trial    (Intercept)       0.19222  0.4384        
+The main changes are in the intercept, where there is now much more variance allotted to the model intercept. This redistribution likely occurred because a large portion of variance i
 
 
 Which random effects make the most difference? Find out using `ranef`. Plot the random effects for subject and item.
 
-The items do, see above.
+Some subjects have very high variability, but the items, in particular the faces and houses, seem to have a very high within-item variability.
 
 ```{r}
+ranef(rs)
 ```
 
 Make the minimal random effects model with just a subject intecept. How does this compare?
 
 ```{r}
-rs3 = lmer(data=d,correct ~ (1|subid))
+rsmin = glmer(data=d,correct ~ (1|subid),family="binomial")
 ```
+
+I really don't know how this is supposed to be comparable... now we just have the intercept and the onerandom effect. 
 
 Get an estimate of the significance value for the coefficient on the `age*condition` interaction by using anova to compare between your semi-maximal model and the model without an intercept.
 
-What?? I have no idea why 
+What?? I have no idea why this anova would do that...
 ```{r}
+anova(rs,rsmin)
+
+rsmax_noint = glmer(data=d,correct ~ as.numeric(age.group)+condition + (condition+as.numeric(age.group)|trial) + (1|subid),family="binomial")
+anova(rsmax_noint,rs)
 ```
+
+I mean I guess this suggests that everything we added is important for the model, so it's clear that the age*condition interaction is important compared to the minimal model, but we added a lot of other things as well. Better to do the comparison with the age+condition mode (the second anova)... that one does show that the interaction is clearly important for the model, reducing the AIC significantly despite the increased degrees of fredom.
+Seems like there's a typo in the hw, but since the class is basically over and the project is handed in and I know how to do mixed effect modeling in my fMRI data I'm not going to try and figure this outany further. 
+
+Thanks for everything! The project portion of the class was wonderful!
